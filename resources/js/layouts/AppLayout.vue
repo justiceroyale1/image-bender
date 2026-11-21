@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TooltipProvider from '@/components/ui/tooltip/TooltipProvider.vue';
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 
@@ -9,6 +10,8 @@ const { breadcrumbs = [] } = defineProps<{
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <slot />
+        <TooltipProvider>
+            <slot />
+        </TooltipProvider>
     </AppLayout>
 </template>
