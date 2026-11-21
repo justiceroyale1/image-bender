@@ -1,4 +1,4 @@
-name: laravel-docker-examples-prod
+name: image-bender-prod
 
 # Settings that every PHP service shares. They run one image: 'php-fpm'
 # serves requests, and the others run Artisan commands.
@@ -38,8 +38,9 @@ x-app: &app
     - laravel-production
   # '&logging' names this value too, and 'logging: *logging' reuses it in
   # the services that don't use '<<: *app'
-  logging: &logging
+  logging:
     # Rotates the container logs, which the default json-file driver doesn't
+    &logging
     driver: local
   depends_on:
     postgres:
@@ -87,7 +88,7 @@ services:
     # covers more than php-fpm's own check of the FPM pool.
     healthcheck:
       # Addressed as 127.0.0.1: nginx listens on IPv4 only inside the container.
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/up"]
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/up" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -99,7 +100,7 @@ services:
   # stops the deploy before the running containers are replaced.
   migrate:
     <<: *app
-    command: ["php", "artisan", "migrate", "--force"]
+    command: [ "php", "artisan", "migrate", "--force" ]
     restart: "no"
     # Replaces the whole 'depends_on' of 'x-app', which includes this service
     depends_on:
@@ -110,7 +111,7 @@ services:
     <<: *app
     healthcheck:
       # The script exits with its own codes; Docker expects 1 for unhealthy
-      test: ["CMD-SHELL", "php-fpm-healthcheck || exit 1"]
+      test: [ "CMD-SHELL", "php-fpm-healthcheck || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -119,7 +120,7 @@ services:
   # Remove it if the application queues nothing.
   queue:
     <<: *app
-    command: ["php", "artisan", "queue:work", "--tries=3"]
+    command: [ "php", "artisan", "queue:work", "--tries=3" ]
     # Longer than the job timeout (60 s by default), so the worker can finish
     # the current job when it's stopped
     stop_grace_period: 90s
@@ -128,7 +129,7 @@ services:
   # Remove it if the application schedules nothing.
   scheduler:
     <<: *app
-    command: ["php", "artisan", "schedule:work"]
+    command: [ "php", "artisan", "schedule:work" ]
 
   postgres:
     image: postgres:18
@@ -147,7 +148,7 @@ services:
       - laravel-production
     logging: *logging
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -163,7 +164,7 @@ services:
       - laravel-production
     logging: *logging
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3

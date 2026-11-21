@@ -1,4 +1,4 @@
-name: laravel-docker-examples-dev
+name: image-bender-dev
 
 # Settings shared by php-fpm and workspace, written once with YAML anchors:
 # Compose ignores top-level keys that start with 'x-', '&xdebug' names this
@@ -31,7 +31,7 @@ services:
     # Checks the application through nginx via Laravel's /up endpoint.
     healthcheck:
       # Addressed as 127.0.0.1: nginx listens on IPv4 only inside the container.
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/up"]
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/up" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -59,7 +59,7 @@ services:
       - laravel-development
     depends_on:
       postgres:
-        condition: service_healthy  # Wait until postgres accepts connections
+        condition: service_healthy # Wait until postgres accepts connections
       redis:
         condition: service_healthy
 
@@ -85,10 +85,10 @@ services:
       - '127.0.0.1:${VITE_PORT:-5173}:${VITE_PORT:-5173}'
     # Vite runs here through 'exec', so stopping the stack kills it before it
     # can remove public/hot, and pages then load assets from a dead dev server
-    command: ["sh", "-c", "rm -f public/hot && exec bash"]
+    command: [ "sh", "-c", "rm -f public/hot && exec bash" ]
     # Either key keeps bash, the main process, running instead of exiting
-    tty: true  # With a terminal, bash waits for input
-    stdin_open: true  # Keeps bash's standard input open, for 'docker compose attach'
+    tty: true # With a terminal, bash waits for input
+    stdin_open: true # Keeps bash's standard input open, for 'docker compose attach'
     volumes:
       - ./:/var/www
     networks:
@@ -110,7 +110,7 @@ services:
     networks:
       - laravel-development
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -120,7 +120,7 @@ services:
     networks:
       - laravel-development
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3

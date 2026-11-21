@@ -59,7 +59,15 @@ FROM node:26-trixie-slim AS node
 # Built once here so nginx (which serves the files) and PHP (which reads
 # manifest.json to render their URLs) can never disagree about which build.
 # API-only project? Drop this stage and the two `COPY --from=assets` lines below.
-FROM node AS assets
+#
+# Based on `app` so PHP and vendor/ are available for @laravel/vite-plugin-wayfinder
+# during `npm run build`.
+FROM app AS assets
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 WORKDIR /var/www
 # .npmrc sets ignore-scripts, which npm ci only applies if the file is here
@@ -145,7 +153,7 @@ FROM runtime AS development
 # see docker/development/php/conf.d/xdebug.ini
 ARG XDEBUG_ENABLED=true
 RUN if [ "${XDEBUG_ENABLED}" = "true" ]; then \
-      pecl install xdebug-3.5.3 && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
+    pecl install xdebug-3.5.3 && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
     fi
 COPY ./docker/development/php/conf.d/xdebug.ini "$PHP_INI_DIR/conf.d/"
 

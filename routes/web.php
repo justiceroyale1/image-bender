@@ -1,11 +1,15 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
-Route::get('/', function () {
-    Log::info('Welcome page visited');
+Route::inertia('/', 'Welcome')->name('home');
 
-    return view('welcome');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
 
 // phpinfo() prints every environment variable, including APP_KEY and DB_PASSWORD
@@ -68,3 +72,5 @@ Route::get('/health', function () {
 
     return response()->json($status, $httpStatus);
 });
+
+require __DIR__.'/settings.php';
