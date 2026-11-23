@@ -23,8 +23,6 @@ function newImageGenerationPayload($overrides = []){
 }
 
 test('can request new image generation', function () {
-    withoutExceptionHandling();
-
     $user = User::factory()->create();
     $payload = newImageGenerationPayload();
 
@@ -43,6 +41,8 @@ test('can request new image generation', function () {
 });
 
 test('prompt, quality, size, and idempotency_key are required for image generation', function () {
+    // withoutExceptionHandling();
+
     $payload = newImageGenerationPayload([
         'prompt' => null,
         'quality' => null,
@@ -50,7 +50,25 @@ test('prompt, quality, size, and idempotency_key are required for image generati
         'idempotency_key' => null
     ]);
 
-    $response = $this->post(route('generations.store'), $payload);
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)
+        ->post(route('generations.store'), $payload);
 
     $response->assertInvalid(['prompt', 'quality', 'size', 'idempotency_key']);
+});
+
+test('image generation prompt is capped at 4000 characters', function () {
+    // withoutExceptionHandling();
+
+    $payload = newImageGenerationPayload([
+        'prompt' => str_repeat('a', 4001),
+    ]);
+
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)
+        ->post(route('generations.store'), $payload);
+
+    $response->assertInvalid(['prompt']);
 });

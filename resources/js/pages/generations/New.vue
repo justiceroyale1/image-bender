@@ -14,9 +14,9 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGr
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { computed, onMounted, ref, watch } from 'vue';
-import { useCurrency } from '@/composables/useCurrency';
+import { useFormat } from '@/composables/useFormat';
 
-const { currencyFormat } = useCurrency();
+const { currencyFormat, numberFormat } = useFormat();
 
 defineOptions({
     layout: {
@@ -27,6 +27,7 @@ defineOptions({
             },
         ],
     },
+    inheritAttrs: false
 });
 
 const pricing = {
@@ -113,6 +114,8 @@ const qualityOptions: { label: string, value: Quality }[] = [
     },
 ]
 
+const maxPromptLength = 4000;
+
 const estimatedCost = ref(0);
 
 const costUnits = 1000000
@@ -124,7 +127,17 @@ const form = useForm<GenerationForm>({
     referenceImages: []
 })
 
-const disableSubmitButton = computed(() => form.prompt.trim() === '')
+const characterLimit = computed(() => maxPromptLength - form.prompt.length)
+const disableSubmitButton = computed(() => form.prompt.trim() === '' || characterLimit.value <= 0)
+const characterLimitClass = computed(() => {
+    if (characterLimit.value < 100) {
+        return 'text-red-500'
+    } else if (characterLimit.value >= 100 && characterLimit.value < 300) {
+        return 'text-yellow-500'
+    } else {
+        return 'text-green-500'
+    }
+})
 
 function getOutputTokens(quality: Quality, size: Size): number {
     return pricing.tokens.output[quality][size];
@@ -216,52 +229,58 @@ onMounted(() => {
         <div class="w-full sm:w-md xl:w-2xl">
             <InputGroup>
                 <InputGroupTextarea v-model="form.prompt" placeholder="Describe the image..." @input="estimateCost"
-                    maxlength="4000" />
+                    :maxlength="maxPromptLength" />
                 <InputGroupAddon align="block-end" class="flex flex-col">
-
-                    <div class="w-full flex gap-2 items-center">
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <InputGroupButton variant="outline" class="rounded-full" size="icon-xs"
-                                    @click="addReferenceImage">
-                                    <PlusIcon class="size-4" />
-                                </InputGroupButton>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Add reference image</p>
-                            </TooltipContent>
-                        </Tooltip>
-                        <Select v-model="form.quality">
-                            <SelectTrigger>
-                                <SelectValue placeholder="Quality" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem v-for="qualityOption in qualityOptions" :key="qualityOption.label"
-                                    :value="qualityOption.value">
-                                    {{ qualityOption.label }}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Select v-model="form.size">
-                            <SelectTrigger>
-                                <SelectValue placeholder="Size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem v-for="sizeOption in sizeOptions" :key="sizeOption.label"
-                                    :value="sizeOption.value">
-                                    {{ sizeOption.label }}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <InputGroupText class="ml-auto">
-                            Est. cost: {{ currencyFormat(estimatedCost) }}
-                        </InputGroupText>
-                        <Separator orientation="vertical" class="!h-4" />
-                        <InputGroupButton variant="default" class="rounded-full bg-green-500" size="icon-xs"
-                            :disabled="disableSubmitButton" @click="submit">
-                            <ArrowUpIcon class="size-4" />
-                            <span class="sr-only">Send</span>
-                        </InputGroupButton>
+                    <div class="w-full grid grid-col-1 xl:flex xl:justify-between gap-3 items-center">
+                        <div class="flex gap-2 items-center">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <InputGroupButton variant="outline" class="rounded-full" size="icon-xs"
+                                        @click="addReferenceImage">
+                                        <PlusIcon class="size-4" />
+                                    </InputGroupButton>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Add reference image</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Select v-model="form.quality">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Quality" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem v-for="qualityOption in qualityOptions" :key="qualityOption.label"
+                                        :value="qualityOption.value">
+                                        {{ qualityOption.label }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Select v-model="form.size">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Size" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem v-for="sizeOption in sizeOptions" :key="sizeOption.label"
+                                        :value="sizeOption.value">
+                                        {{ sizeOption.label }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <InputGroupText :class="['ml-auto', 'font-medium', characterLimitClass]">
+                                {{ numberFormat(characterLimit) }}
+                            </InputGroupText>
+                        </div>
+                        <div class="flex gap-2 items-center justify-between xl:justify-end">
+                            <InputGroupText>
+                                Est. cost: {{ currencyFormat(estimatedCost) }}
+                            </InputGroupText>
+                            <Separator orientation="vertical" class="!h-4" />
+                            <InputGroupButton variant="default" class="rounded-full bg-green-500" size="icon-xs"
+                                :disabled="disableSubmitButton" @click="submit">
+                                <ArrowUpIcon class="size-4" />
+                                <span class="sr-only">Send</span>
+                            </InputGroupButton>
+                        </div>
                     </div>
                 </InputGroupAddon>
             </InputGroup>
