@@ -26,7 +26,7 @@ class StoreImageGenerationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prompt' => ['required', 'string|min:3', 'max:4000'],
+            'prompt' => ['required', 'string', 'min:3', 'max:4000'],
             'quality' => ['required', 'string', Rule::in(Quality::cases())],
             'size' => ['required', 'string', Rule::in(Size::cases())],
             'idempotency_key' => ['required', 'uuid:4'],

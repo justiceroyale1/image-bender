@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('image_generations', function (Blueprint $table) {
             $table->id();
+            $table->ulid('ulid')->unique()->after('id');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->uuid('idempotency_key');
             $table->text('prompt');

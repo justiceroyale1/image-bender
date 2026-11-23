@@ -11,3 +11,5 @@ test('can access new image generation page', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('generations/New'));
 });
+
+test('can access image generation view page')->todo();

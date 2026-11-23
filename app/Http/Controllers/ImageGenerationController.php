@@ -16,6 +16,6 @@ class ImageGenerationController extends Controller
 
         $generation = $action->execute($newImageGenerationDto);
 
-        return redirect(route('generations.show', $generation->id));
+        return to_route('generations.show', $generation->ulid);
     }
 }

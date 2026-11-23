@@ -2,12 +2,16 @@
 
 use App\Enums\Quality;
 use App\Enums\Size;
+use App\Models\ImageGeneration;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
 
+use function Pest\Laravel\withoutExceptionHandling;
+
 function newImageGenerationPayload($overrides = []){
     return array_merge([
-        'prompt' => fake()->sentences(2, true),
+        'prompt' => "An epic battle in space",
         'quality' => Quality::High->value,
         'size' => Size::Landscape->value,
         'reference_images' => [
@@ -19,17 +23,23 @@ function newImageGenerationPayload($overrides = []){
 }
 
 test('can request new image generation', function () {
+    withoutExceptionHandling();
+
+    $user = User::factory()->create();
     $payload = newImageGenerationPayload();
 
-    $response = $this->post(route('generations.store'), $payload);
+    $response = $this->actingAs($user)
+        ->post(route('generations.store'), $payload);
 
-    $response->assertOk()
-        ->assertJson(fn (AssertableJson $json) => 
-            $json->where('quality', $payload['quality'])
-                ->where('size', $payload['size'])
-                ->where('idempotency_key', $payload['idempotency_key'])
-                ->etc()
-        );
+    /**
+     * @todo: assert the Pixelforge job was dispatched
+     */
+
+    $imageGeneration = ImageGeneration::latest()->first();
+
+    $this->assertNotNull($imageGeneration);
+
+    $response->assertRedirectToRoute('generations.show', $imageGeneration->ulid);
 });
 
 test('prompt, quality, size, and idempotency_key are required for image generation', function () {

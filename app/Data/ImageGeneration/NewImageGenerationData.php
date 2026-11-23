@@ -2,8 +2,6 @@
 
 namespace App\Data\ImageGeneration;
 
-use App\Enums\Quality;
-use App\Enums\Size;
 use App\Http\Requests\StoreImageGenerationRequest;
 use Illuminate\Support\Str;
 
@@ -15,8 +13,8 @@ class NewImageGenerationData
     public function __construct(
         public string $idempotencyKey,
         public string $prompt,
-        public Quality $quality,
-        public Size $size,
+        public string $quality,
+        public string $size,
         public array $referenceImages,
         public int $userId
     )
@@ -27,7 +25,7 @@ class NewImageGenerationData
         $validated = $request->validated();
 
         return new self(
-            Str::lower($validated['idempotency']),
+            Str::lower($validated['idempotency_key']),
             $validated['prompt'],
             $validated['quality'],
             $validated['size'],

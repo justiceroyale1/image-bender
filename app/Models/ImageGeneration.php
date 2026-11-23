@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ImageGeneration extends Model
 {
@@ -19,4 +20,24 @@ class ImageGeneration extends Model
         'provider_error',
         'provider_response'
     ];
+
+    protected function casts(){
+        return [
+            'reference_images' => 'array',
+            'provider_error' => 'array',
+            'provider_response' => 'array'
+        ];
+    } 
+
+    protected static function booted(): void
+    {
+        static::creating(function ($generation) {
+            $generation->ulid ??= (string) Str::ulid();
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'ulid';
+    }
 }
