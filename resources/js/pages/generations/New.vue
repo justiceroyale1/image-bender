@@ -74,7 +74,7 @@ type Size = keyof OutputMap[Quality]
 
 type ReasoningMap = typeof pricing.tokens.reasoning
 type ReasoningQuality = keyof ReasoningMap
-type ReasoningSize = keyof ReasoningMap[ReasoningQuality]
+type ReasoningLevel = keyof ReasoningMap[ReasoningQuality]
 
 interface GenerationForm {
     prompt: string;
@@ -130,7 +130,7 @@ function getOutputTokens(quality: Quality, size: Size): number {
     return pricing.tokens.output[quality][size];
 }
 
-function getReasoningTokens(quality: ReasoningQuality, size: ReasoningSize): number {
+function getReasoningTokens(quality: ReasoningQuality, size: ReasoningLevel): number {
     return pricing.tokens.reasoning[quality][size]
 }
 
@@ -190,6 +190,7 @@ const submit = () => {
         reference_images: data.referenceImages
             .map((item) => item.value.trim())
             .filter((url) => url !== ''),
+        idempotency_key: crypto.randomUUID(),
         referenceImages: undefined,
     })).post('/generations');
 };

@@ -1,8 +1,10 @@
-import GenerationController from './GenerationController'
+import NewImageGenerationPageController from './NewImageGenerationPageController'
+import ImageGenerationController from './ImageGenerationController'
 import Settings from './Settings'
 
 const Controllers = {
-    GenerationController: Object.assign(GenerationController, GenerationController),
+    NewImageGenerationPageController: Object.assign(NewImageGenerationPageController, NewImageGenerationPageController),
+    ImageGenerationController: Object.assign(ImageGenerationController, ImageGenerationController),
     Settings: Object.assign(Settings, Settings),
 }
 

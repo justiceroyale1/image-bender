@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\GenerationController;
+use App\Http\Controllers\ImageGenerationController;
+use App\Http\Controllers\NewImageGenerationPageController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -11,7 +12,10 @@ Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-    Route::get('generations/new', [GenerationController::class, 'create'])->name('generations.create');
+    Route::get('generations/new', NewImageGenerationPageController::class)
+        ->name('generations.create');
+    Route::resource('generations', ImageGenerationController::class)
+        ->only(['store', 'show', 'index']);
 });
 
 // phpinfo() prints every environment variable, including APP_KEY and DB_PASSWORD
