@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contracts\ImageGenerator;
+use App\Services\ImageGeneration\MockImageGenerator;
+use App\Services\ImageGeneration\PixelforgeImageGenerator;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(ImageGenerator::class, function ($app) {
+            return match(config('ai-image.driver')){
+                'pixelforge' => new PixelforgeImageGenerator(
+                    baseUrl: config('ai-image.base_url'),
+                    apiKey: config('ai-image.api_key'),
+                ),
+                default => new MockImageGenerator(),
+            };
+        });
     }
 
     /**

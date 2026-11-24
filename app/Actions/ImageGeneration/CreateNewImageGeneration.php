@@ -3,6 +3,7 @@
 namespace App\Actions\ImageGeneration;
 
 use App\Data\ImageGeneration\NewImageGenerationData;
+use App\Jobs\SubmitImageGeneration;
 use App\Models\ImageGeneration;
 
 class CreateNewImageGeneration{
@@ -18,8 +19,9 @@ class CreateNewImageGeneration{
             'reference_images' => $data->referenceImages,
         ]);
 
-        if($generation->wasRecentlyCreated){
-            //@todo: dispatch Pixelforge API job
+        if ($generation->wasRecentlyCreated || $generation->dispatched_at === null) {
+            SubmitImageGeneration::dispatch($generation)->afterCommit();
+            $generation->update(['dispatched_at' => now()]);
         }
 
         return $generation;

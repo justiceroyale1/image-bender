@@ -24,9 +24,12 @@ return new class extends Migration
             // queued -> processing -> succeeded -> failed
             $table->string('status')->default(Status::Queued->value);
             $table->text('image_url')->nullable();
+            $table->timestamp('image_url_expires_at')->nullable();
+            $table->string('provider_id')->nullable();
             $table->string('provider_cost')->nullable();
             $table->json('provider_error')->nullable();
             $table->json('provider_response')->nullable();
+            $table->timestamp('dispatched_at')->nullable();
             $table->timestamps();
 
             // Prevents duplicate client submissions per user

@@ -63,6 +63,34 @@ services:
       redis:
         condition: service_healthy
 
+  horizon:
+    build:
+      context: .
+      dockerfile: ./docker/common/Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        XDEBUG_ENABLED: ${XDEBUG_ENABLED:-true}
+    environment:
+      <<: *xdebug
+      XDEBUG_MODE: "off" # Optional: disables step-debugging in Horizon unless needed
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command: php artisan horizon
+    stop_signal: SIGTERM
+    stop_grace_period: 30s
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel-development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   workspace:
     build:
       context: .

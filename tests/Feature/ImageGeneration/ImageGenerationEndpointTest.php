@@ -2,8 +2,10 @@
 
 use App\Enums\Quality;
 use App\Enums\Size;
+use App\Jobs\SubmitImageGeneration;
 use App\Models\ImageGeneration;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
 
@@ -23,17 +25,21 @@ function newImageGenerationPayload($overrides = []){
 }
 
 test('can request new image generation', function () {
+    Queue::fake();
+    
     $user = User::factory()->create();
     $payload = newImageGenerationPayload();
 
     $response = $this->actingAs($user)
         ->post(route('generations.store'), $payload);
 
-    /**
-     * @todo: assert the Pixelforge job was dispatched
-     */
-
     $imageGeneration = ImageGeneration::latest()->first();
+
+    Queue::assertPushed(SubmitImageGeneration::class, 
+        function (SubmitImageGeneration $job) use ($imageGeneration) {
+            return $job->generation->is($imageGeneration);
+        }
+    );
 
     $this->assertNotNull($imageGeneration);
 
