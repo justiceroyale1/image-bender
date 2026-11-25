@@ -21,6 +21,7 @@ function newImageGenerationPayload($overrides = []): array
             'https://picsum.photos/id/1062/200/300.jpg',
         ],
         'idempotency_key' => Str::uuid()->toString(),
+        'estimated_cost' => '0.000000000',
     ], $overrides);
 }
 

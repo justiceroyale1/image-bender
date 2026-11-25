@@ -23,6 +23,7 @@ class StoreImageGenerationRequest extends FormRequest
             'prompt' => ['required', 'string', 'min:3', 'max:4000'],
             'quality' => ['required', Rule::enum(Quality::class)],
             'size' => ['required', Rule::enum(Size::class)],
+            'estimated_cost' => ['required', 'numeric', 'min:0'],
             'idempotency_key' => ['required', 'uuid:4'],
             'reference_images' => ['array', 'nullable'],
             'reference_images.*' => ['url'],

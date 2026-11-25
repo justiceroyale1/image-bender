@@ -17,6 +17,7 @@ class CreateNewImageGeneration
             'prompt' => $data->prompt,
             'quality' => $data->quality,
             'size' => $data->size,
+            'estimated_cost' => $data->estimatedCost,
             'reference_images' => $data->referenceImages,
         ]);
 

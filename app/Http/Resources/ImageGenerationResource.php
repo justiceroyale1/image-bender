@@ -19,7 +19,11 @@ class ImageGenerationResource extends JsonResource
             'size' => $this->size->value,
             'status' => $this->status->value,
             'is_in_flight' => $this->isInFlight(),
-            'cost' => $this->provider_cost !== null ? (float) $this->provider_cost : null,
+            'estimated_cost' => $this->estimated_cost
+                ? (float) $this->estimated_cost
+                : null,
+            'provider_cost' => $this->provider_cost !== null ? (float) $this->provider_cost : null,
+            'cost' => $this->user_cost !== null ? (float) $this->user_cost : null,
             'image_url' => $this->image_url,
             'is_expired' => $this->image_url_expires_at?->isPast() ?? false,
             'reference_images' => $this->reference_images ?? [],

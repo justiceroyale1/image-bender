@@ -79,35 +79,4 @@ readonly class GenerationData
     {
         return $this->status === 'failed';
     }
-
-    /**
-     * Calculate exact cost in USD (9 decimal places) without float drift,
-     * using the locked-in rates returned on the generation object.
-     * Requires PHP's bcmath extension (standard in Laravel).
-     */
-    public function costUsd(): string
-    {
-        if (! $this->succeeded() || empty($this->usage) || $this->rates === []) {
-            return '0.000000000';
-        }
-
-        $total = '0';
-        $tokenTypes = [
-            'input_text_tokens',
-            'input_image_tokens',
-            'output_tokens',
-            'reasoning_tokens',
-        ];
-
-        foreach ($tokenTypes as $type) {
-            $tokens = (string) ($this->usage[$type] ?? 0);
-            $ratePerMillion = (string) ($this->rates[$type] ?? '0');
-
-            // (tokens * rate_per_1m) / 1,000,000 with 9 decimal places
-            $lineCost = bcdiv(bcmul($tokens, $ratePerMillion, 9), '1000000', 9);
-            $total = bcadd($total, $lineCost, 9);
-        }
-
-        return $total;
-    }
 }

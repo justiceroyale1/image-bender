@@ -46,7 +46,7 @@ test('submit image generation job marks generation failed on non-retryable api e
         ], 400),
     ]);
 
-    $generation = ImageGeneration::create([
+    $generation = ImageGeneration::factory()->create([
         'user_id' => User::factory()->create()->id,
         'idempotency_key' => 'idem-blocked',
         'prompt' => '[blocked] unsafe prompt',

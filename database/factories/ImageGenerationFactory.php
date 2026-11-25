@@ -31,6 +31,10 @@ class ImageGenerationFactory extends Factory
             'quality' => Quality::Medium,
             'size' => Size::Square,
             'status' => Status::Queued,
+            'estimated_cost' => '0.000000000',
+            'reference_images' => null,
+            'image_url' => null,
+            'image_url_expires_at' => null,
         ];
     }
 }

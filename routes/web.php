@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ImageGenerationController;
 use App\Http\Controllers\NewImageGenerationPageController;
+use App\Http\Controllers\PixelforgeWebhookController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,9 +15,12 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('generations/new', NewImageGenerationPageController::class)
         ->name('generations.create');
+    Route::redirect('/generations', '/generations/new');
     Route::resource('generations', ImageGenerationController::class)
         ->only(['store', 'show']);
 });
+
+Route::post('/webhooks/pixelforge', PixelforgeWebhookController::class);
 
 // phpinfo() prints every environment variable, including APP_KEY and DB_PASSWORD
 if (app()->isLocal()) {

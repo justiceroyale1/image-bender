@@ -15,6 +15,7 @@ class NewImageGenerationData
         public string $prompt,
         public string $quality,
         public string $size,
+        public string $estimatedCost,
         public array $referenceImages,
         public int $userId
     ) {}
@@ -28,6 +29,7 @@ class NewImageGenerationData
             $validated['prompt'],
             $validated['quality'],
             $validated['size'],
+            $validated['estimated_cost'],
             $validated['reference_images'] ?? [],
             $request->user()->id
         );

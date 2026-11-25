@@ -204,6 +204,7 @@ const submit = () => {
             .map((item) => item.value.trim())
             .filter((url) => url !== ''),
         idempotency_key: crypto.randomUUID(),
+        estimated_cost: estimatedCost.value,
         referenceImages: undefined,
     })).post('/generations');
 };

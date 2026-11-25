@@ -21,12 +21,14 @@ return new class extends Migration
             $table->string('quality');
             $table->string('size');
             $table->json('reference_images')->nullable();
+            $table->string('estimated_cost');
             // queued -> processing -> succeeded -> failed
             $table->string('status')->default(Status::Queued->value);
             $table->text('image_url')->nullable();
             $table->timestamp('image_url_expires_at')->nullable();
             $table->string('provider_id')->nullable();
             $table->string('provider_cost')->nullable();
+            $table->string('user_cost')->nullable();
             $table->json('provider_error')->nullable();
             $table->json('provider_response')->nullable();
             $table->timestamp('dispatched_at')->nullable();
