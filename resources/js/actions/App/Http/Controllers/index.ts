@@ -1,12 +1,16 @@
+import DashboardController from './DashboardController'
 import NewImageGenerationPageController from './NewImageGenerationPageController'
 import ImageGenerationController from './ImageGenerationController'
-import PixelforgeWebhookController from './PixelforgeWebhookController'
+import UsageController from './UsageController'
+import Webhooks from './Webhooks'
 import Settings from './Settings'
 
 const Controllers = {
+    DashboardController: Object.assign(DashboardController, DashboardController),
     NewImageGenerationPageController: Object.assign(NewImageGenerationPageController, NewImageGenerationPageController),
     ImageGenerationController: Object.assign(ImageGenerationController, ImageGenerationController),
-    PixelforgeWebhookController: Object.assign(PixelforgeWebhookController, PixelforgeWebhookController),
+    UsageController: Object.assign(UsageController, UsageController),
+    Webhooks: Object.assign(Webhooks, Webhooks),
     Settings: Object.assign(Settings, Settings),
 }
 

@@ -56,8 +56,8 @@ function processPixelforgeWebhook(WebhookEvent $event): ProcessPixelforgeWebhook
 // Status updates
 // -----------------------------------------------------------------------------
 
-describe('generation status updates', function () {
-    test('updates generation status when a processing event is received', function () {
+describe('generation status updates', function (): void {
+    test('updates generation status when a processing event is received', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -84,7 +84,7 @@ describe('generation status updates', function () {
             ->and($event->processed_at)->not->toBeNull();
     });
 
-    test('updates generation status when a failed event is received', function () {
+    test('updates generation status when a failed event is received', function (): void {
         $generation = createImageGeneration();
 
         $providerError = [
@@ -117,7 +117,7 @@ describe('generation status updates', function () {
             ->and($event->processed_at)->not->toBeNull();
     });
 
-    test('marks events without a provider ID as processed', function () {
+    test('marks events without a provider ID as processed', function (): void {
         $event = createPixelforgeWebhookEvent(
             'generation.processing',
             []
@@ -132,7 +132,7 @@ describe('generation status updates', function () {
         expect(ImageGeneration::count())->toBe(0);
     });
 
-    test('marks unsupported event types as processed', function () {
+    test('marks unsupported event types as processed', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -156,8 +156,8 @@ describe('generation status updates', function () {
 // Successful generation and file storage
 // -----------------------------------------------------------------------------
 
-describe('successful generation', function () {
-    test('downloads and stores the generated image on the public disk', function () {
+describe('successful generation', function (): void {
+    test('downloads and stores the generated image on the public disk', function (): void {
         Storage::fake('public');
 
         config([
@@ -217,11 +217,11 @@ describe('successful generation', function () {
             ->and($event->processed_at)->not->toBeNull();
 
         Http::assertSent(
-            fn ($request) => $request->url() === $remoteUrl
+            fn ($request): bool => $request->url() === $remoteUrl
         );
     });
 
-    test('stores the generated image on an S3-compatible disk', function () {
+    test('stores the generated image on an S3-compatible disk', function (): void {
         // Create a fake disk first, then configure its metadata as S3.
         // The resolved fake disk remains in use by Laravel's filesystem manager.
         Storage::fake('s3');
@@ -272,7 +272,7 @@ describe('successful generation', function () {
             ->and($generation->provider_cost)->toBe('0.000000000');
     });
 
-    test('falls back to the remote image URL when storage is not configured', function () {
+    test('falls back to the remote image URL when storage is not configured', function (): void {
         config([
             'ai-image.storage_disk' => null,
         ]);
@@ -307,7 +307,7 @@ describe('successful generation', function () {
         Http::assertNothingSent();
     });
 
-    test('falls back to the remote URL when image download fails', function () {
+    test('falls back to the remote URL when image download fails', function (): void {
         Storage::fake('public');
 
         config([
@@ -348,7 +348,7 @@ describe('successful generation', function () {
         );
     });
 
-    test('does not download an image when the remote URL is missing', function () {
+    test('does not download an image when the remote URL is missing', function (): void {
         Storage::fake('public');
 
         config([
@@ -384,8 +384,8 @@ describe('successful generation', function () {
 // Exact cost calculations
 // -----------------------------------------------------------------------------
 
-describe('provider cost calculation', function () {
-    test('calculates exact token costs without floating-point drift', function () {
+describe('provider cost calculation', function (): void {
+    test('calculates exact token costs without floating-point drift', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -414,7 +414,7 @@ describe('provider cost calculation', function () {
         expect($generation->provider_cost)->toBe('1.700000000');
     });
 
-    test('calculates zero cost when usage and rates are missing', function () {
+    test('calculates zero cost when usage and rates are missing', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -431,7 +431,7 @@ describe('provider cost calculation', function () {
         expect($generation->provider_cost)->toBe('0.000000000');
     });
 
-    test('ignores missing or non-numeric rates', function () {
+    test('ignores missing or non-numeric rates', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -461,8 +461,8 @@ describe('provider cost calculation', function () {
 // Out-of-order webhook handling
 // -----------------------------------------------------------------------------
 
-describe('out-of-order webhook handling', function () {
-    test('ignores processing events when the generation has already succeeded', function () {
+describe('out-of-order webhook handling', function (): void {
+    test('ignores processing events when the generation has already succeeded', function (): void {
         $generation = createImageGeneration(
             attributes: [
                 'status' => Status::Succeeded,
@@ -490,7 +490,7 @@ describe('out-of-order webhook handling', function () {
             ->and($event->processed_at)->not->toBeNull();
     });
 
-    test('ignores failed events when the generation has already succeeded', function () {
+    test('ignores failed events when the generation has already succeeded', function (): void {
         $generation = createImageGeneration(
             attributes: [
                 'status' => Status::Succeeded,
@@ -523,8 +523,8 @@ describe('out-of-order webhook handling', function () {
 // Idempotency
 // -----------------------------------------------------------------------------
 
-describe('webhook idempotency', function () {
-    test('does not process an already processed webhook again', function () {
+describe('webhook idempotency', function (): void {
+    test('does not process an already processed webhook again', function (): void {
         $generation = createImageGeneration();
 
         $event = createPixelforgeWebhookEvent(
@@ -550,8 +550,8 @@ describe('webhook idempotency', function () {
 // Race condition and queue retries
 // -----------------------------------------------------------------------------
 
-describe('generation creation race condition', function () {
-    test('releases the job with a 2-second delay when the generation does not exist yet', function () {
+describe('generation creation race condition', function (): void {
+    test('releases the job with a 2-second delay when the generation does not exist yet', function (): void {
         $event = createPixelforgeWebhookEvent(
             'generation.processing',
             [
@@ -577,7 +577,7 @@ describe('generation creation race condition', function () {
         expect($event->processed_at)->toBeNull();
     });
 
-    test('does not mark the webhook as processed when all retry attempts are exhausted', function () {
+    test('does not mark the webhook as processed when all retry attempts are exhausted', function (): void {
         $event = createPixelforgeWebhookEvent(
             'generation.processing',
             [

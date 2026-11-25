@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\ImageGeneration;
 
 use App\Enums\Quality;
 use App\Enums\Size;

@@ -5,10 +5,11 @@ use App\Jobs\ProcessPixelforgeWebhook;
 use App\Models\WebhookEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Testing\TestResponse;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     config([
         'ai-image.webhook_secret' => 'test-webhook-secret',
     ]);
@@ -42,7 +43,7 @@ function sendPixelforgeWebhook(
     ?int $timestamp = null,
     bool $includeSignature = true,
     mixed $test = null
-): \Illuminate\Testing\TestResponse {
+): TestResponse {
     $payload = json_encode($event, JSON_THROW_ON_ERROR);
 
     $headers = [
@@ -57,11 +58,15 @@ function sendPixelforgeWebhook(
         );
     }
 
-    $test = $test ?? test();
+    $test ??= test();
+
     return $test->withHeaders($headers)
         ->postJson('/webhooks/pixelforge', $event);
 }
 
+/**
+ * @return array<string, array<string, array<string, string>>|string>
+ */
 function pixelforgeEvent(
     string $type = 'generation.succeeded',
     string $id = 'evt_test_123',
@@ -82,8 +87,8 @@ function pixelforgeEvent(
 // Signature verification
 // -----------------------------------------------------------------------------
 
-describe('signature verification', function () {
-    test('accepts a valid signature without a CSRF token', function () {
+describe('signature verification', function (): void {
+    test('accepts a valid signature without a CSRF token', function (): void {
         $event = pixelforgeEvent();
 
         $response = sendPixelforgeWebhook($event);
@@ -95,7 +100,7 @@ describe('signature verification', function () {
         Queue::assertPushed(ProcessPixelforgeWebhook::class);
     });
 
-    test('rejects requests without a signature', function () {
+    test('rejects requests without a signature', function (): void {
         $response = sendPixelforgeWebhook(
             pixelforgeEvent(),
             includeSignature: false
@@ -108,7 +113,7 @@ describe('signature verification', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects an invalid signature', function () {
+    test('rejects an invalid signature', function (): void {
         $event = pixelforgeEvent();
 
         $payload = json_encode($event, JSON_THROW_ON_ERROR);
@@ -133,7 +138,7 @@ describe('signature verification', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects requests when the webhook secret is missing', function () {
+    test('rejects requests when the webhook secret is missing', function (): void {
         config(['ai-image.webhook_secret' => null]);
 
         $response = sendPixelforgeWebhook(
@@ -148,7 +153,7 @@ describe('signature verification', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects requests with an expired timestamp', function () {
+    test('rejects requests with an expired timestamp', function (): void {
         $event = pixelforgeEvent();
 
         $response = sendPixelforgeWebhook(
@@ -163,7 +168,7 @@ describe('signature verification', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects requests with a timestamp too far in the future', function () {
+    test('rejects requests with a timestamp too far in the future', function (): void {
         $response = sendPixelforgeWebhook(
             pixelforgeEvent(),
             timestamp: time() + 301
@@ -176,7 +181,7 @@ describe('signature verification', function () {
         Queue::assertNothingPushed();
     });
 
-    test('accepts timestamps within the allowed tolerance', function () {
+    test('accepts timestamps within the allowed tolerance', function (): void {
         // $this->withoutExceptionHandling();
         $this->freezeSecond();
         $now = now();
@@ -224,8 +229,8 @@ describe('signature verification', function () {
 // Event persistence and job dispatching
 // -----------------------------------------------------------------------------
 
-describe('event processing', function () {
-    test('persists and dispatches a generation.succeeded event', function () {
+describe('event processing', function (): void {
+    test('persists and dispatches a generation.succeeded event', function (): void {
         $event = pixelforgeEvent('generation.succeeded');
 
         $response = sendPixelforgeWebhook($event);
@@ -244,12 +249,11 @@ describe('event processing', function () {
 
         Queue::assertPushed(
             ProcessPixelforgeWebhook::class,
-            fn (ProcessPixelforgeWebhook $job) =>
-                $job->webhookEvent->is($webhookEvent)
+            fn (ProcessPixelforgeWebhook $job) => $job->webhookEvent->is($webhookEvent)
         );
     });
 
-    test('persists and dispatches a generation.processing event', function () {
+    test('persists and dispatches a generation.processing event', function (): void {
         $event = pixelforgeEvent('generation.processing');
 
         $response = sendPixelforgeWebhook($event);
@@ -267,8 +271,8 @@ describe('event processing', function () {
 // Ping handling
 // -----------------------------------------------------------------------------
 
-describe('ping events', function () {
-    test('returns 204 without persisting or dispatching a job', function () {
+describe('ping events', function (): void {
+    test('returns 204 without persisting or dispatching a job', function (): void {
         $event = pixelforgeEvent('ping');
 
         $response = sendPixelforgeWebhook($event);
@@ -285,8 +289,8 @@ describe('ping events', function () {
 // Deduplication
 // -----------------------------------------------------------------------------
 
-describe('event deduplication', function () {
-    test('processes an event only once when the same event ID is received twice', function () {
+describe('event deduplication', function (): void {
+    test('processes an event only once when the same event ID is received twice', function (): void {
         $event = pixelforgeEvent();
 
         $firstResponse = sendPixelforgeWebhook($event);
@@ -307,8 +311,8 @@ describe('event deduplication', function () {
 // Malformed payloads
 // -----------------------------------------------------------------------------
 
-describe('payload validation', function () {
-    test('rejects malformed JSON', function () {
+describe('payload validation', function (): void {
+    test('rejects malformed JSON', function (): void {
         $payload = '{"id":';
 
         $response = $this->call(
@@ -335,7 +339,7 @@ describe('payload validation', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects events without an ID', function () {
+    test('rejects events without an ID', function (): void {
         $event = [
             'type' => 'generation.succeeded',
             'data' => [],
@@ -348,7 +352,7 @@ describe('payload validation', function () {
         Queue::assertNothingPushed();
     });
 
-    test('rejects events without a type', function () {
+    test('rejects events without a type', function (): void {
         $event = [
             'id' => 'evt_missing_type',
             'data' => [],

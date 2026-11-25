@@ -108,7 +108,7 @@ class ProcessPixelforgeWebhook implements ShouldQueue
                         $storedUrl = url(Storage::disk($disk)->url($path));
                     }
                 }
-            } catch (ConnectionException $e) {
+            } catch (ConnectionException) {
                 // Still catch network/timeout errors so the job gracefully falls back to $remoteUrl
             }
         }
@@ -116,7 +116,7 @@ class ProcessPixelforgeWebhook implements ShouldQueue
         DB::transaction(function () use ($generation, $object, $remoteUrl, $storedUrl): void {
             $providerCost = $this->calculateProviderCost($object);
             $userCost = $this->calculateUserCost($providerCost);
-            
+
             $generation->update([
                 'status' => Status::Succeeded,
                 'image_url' => $storedUrl ?? $remoteUrl,
@@ -131,7 +131,6 @@ class ProcessPixelforgeWebhook implements ShouldQueue
             $this->markProcessed();
         });
     }
-
 
     /**
      * Resolve the configured storage disk only if it is properly set up and safe to persist to.
@@ -169,7 +168,6 @@ class ProcessPixelforgeWebhook implements ShouldQueue
 
         return $disk;
     }
-
 
     /**
      * @param  array<string, mixed>  $object

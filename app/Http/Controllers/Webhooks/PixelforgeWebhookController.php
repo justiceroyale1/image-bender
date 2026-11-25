@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Webhooks;
 
 use App\Jobs\ProcessPixelforgeWebhook;
 use App\Models\WebhookEvent;
@@ -54,7 +54,7 @@ class PixelforgeWebhookController
             return response()->noContent();
         }
 
-        ProcessPixelforgeWebhook::dispatch($webhookEvent);
+        dispatch(new ProcessPixelforgeWebhook($webhookEvent));
 
         return response()->noContent();
     }

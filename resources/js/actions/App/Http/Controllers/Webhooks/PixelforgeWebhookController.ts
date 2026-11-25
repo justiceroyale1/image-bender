@@ -1,7 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
-* @see \App\Http\Controllers\PixelforgeWebhookController::__invoke
-* @see app/Http/Controllers/PixelforgeWebhookController.php:13
+* @see \App\Http\Controllers\Webhooks\PixelforgeWebhookController::__invoke
+* @see app/Http/Controllers/Webhooks/PixelforgeWebhookController.php:13
 * @route '/webhooks/pixelforge'
 */
 const PixelforgeWebhookController = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -15,8 +15,8 @@ PixelforgeWebhookController.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
-* @see \App\Http\Controllers\PixelforgeWebhookController::__invoke
-* @see app/Http/Controllers/PixelforgeWebhookController.php:13
+* @see \App\Http\Controllers\Webhooks\PixelforgeWebhookController::__invoke
+* @see app/Http/Controllers/Webhooks/PixelforgeWebhookController.php:13
 * @route '/webhooks/pixelforge'
 */
 PixelforgeWebhookController.url = (options?: RouteQueryOptions) => {
@@ -24,8 +24,8 @@ PixelforgeWebhookController.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\PixelforgeWebhookController::__invoke
-* @see app/Http/Controllers/PixelforgeWebhookController.php:13
+* @see \App\Http\Controllers\Webhooks\PixelforgeWebhookController::__invoke
+* @see app/Http/Controllers/Webhooks/PixelforgeWebhookController.php:13
 * @route '/webhooks/pixelforge'
 */
 PixelforgeWebhookController.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -34,8 +34,8 @@ PixelforgeWebhookController.post = (options?: RouteQueryOptions): RouteDefinitio
 })
 
 /**
-* @see \App\Http\Controllers\PixelforgeWebhookController::__invoke
-* @see app/Http/Controllers/PixelforgeWebhookController.php:13
+* @see \App\Http\Controllers\Webhooks\PixelforgeWebhookController::__invoke
+* @see app/Http/Controllers/Webhooks/PixelforgeWebhookController.php:13
 * @route '/webhooks/pixelforge'
 */
 const PixelforgeWebhookControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -44,8 +44,8 @@ const PixelforgeWebhookControllerForm = (options?: RouteQueryOptions): RouteForm
 })
 
 /**
-* @see \App\Http\Controllers\PixelforgeWebhookController::__invoke
-* @see app/Http/Controllers/PixelforgeWebhookController.php:13
+* @see \App\Http\Controllers\Webhooks\PixelforgeWebhookController::__invoke
+* @see app/Http/Controllers/Webhooks/PixelforgeWebhookController.php:13
 * @route '/webhooks/pixelforge'
 */
 PixelforgeWebhookControllerForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

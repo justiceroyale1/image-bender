@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageGenerationController;
 use App\Http\Controllers\NewImageGenerationPageController;
-use App\Http\Controllers\PixelforgeWebhookController;
+use App\Http\Controllers\UsageController;
+use App\Http\Controllers\Webhooks\PixelforgeWebhookController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -12,12 +14,15 @@ use Illuminate\Support\Facades\Storage;
 Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    
     Route::get('generations/new', NewImageGenerationPageController::class)
         ->name('generations.create');
     Route::redirect('/generations', '/generations/new');
     Route::resource('generations', ImageGenerationController::class)
         ->only(['store', 'show']);
+
+    Route::get('/usage', UsageController::class)->name('usage.index');
 });
 
 Route::post('/webhooks/pixelforge', PixelforgeWebhookController::class);

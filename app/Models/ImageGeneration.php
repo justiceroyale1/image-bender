@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Quality;
 use App\Enums\Size;
 use App\Enums\Status;
+use Carbon\CarbonImmutable;
 use Database\Factories\ImageGenerationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
@@ -23,24 +24,28 @@ use Illuminate\Support\Str;
  * @property Quality $quality
  * @property Size $size
  * @property array<array-key, mixed>|null $reference_images
+ * @property string $estimated_cost
  * @property Status $status
  * @property string|null $image_url
- * @property \Carbon\CarbonImmutable|null $image_url_expires_at
+ * @property CarbonImmutable|null $image_url_expires_at
  * @property string|null $provider_id
  * @property string|null $provider_cost
+ * @property string|null $user_cost
  * @property array<array-key, mixed>|null $provider_error
  * @property array<array-key, mixed>|null $provider_response
- * @property \Carbon\CarbonImmutable|null $dispatched_at
- * @property \Carbon\CarbonImmutable|null $created_at
- * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property CarbonImmutable|null $dispatched_at
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
  * @property-read string $prompt_title
- * @property-read \App\Models\User $user
+ * @property-read User $user
+ *
  * @method static \Database\Factories\ImageGenerationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereDispatchedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereEstimatedCost($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereIdempotencyKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereImageUrl($value)
@@ -56,7 +61,9 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereUlid($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereUserCost($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageGeneration whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable([

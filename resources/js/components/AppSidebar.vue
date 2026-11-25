@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, SquarePen } from '@lucide/vue';
+import { LayoutGrid, SquarePen, MonitorActivity } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -18,6 +18,7 @@ import NavHistory from '@/components/NavHistory.vue';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import { create } from '@/routes/generations';
+import { index } from '@/routes/usage';
 
 const mainNavItems: NavItem[] = [
     {
@@ -29,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'New Generation',
         href: create(),
         icon: SquarePen,
+    },
+    {
+        title: 'Usage & Billing',
+        href: index(),
+        icon: MonitorActivity,
     },
 ];
 

@@ -3,9 +3,11 @@
 namespace App\Services\ImageGeneration;
 
 use App\Contracts\ImageGenerator;
-use App\Data\GenerationData;
+use App\Data\ImageGeneration\GenerationData;
+use App\Data\ImageGeneration\UsageData;
 use App\Models\ImageGeneration;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class PixelforgeImageGenerator implements ImageGenerator
@@ -35,6 +37,25 @@ class PixelforgeImageGenerator implements ImageGenerator
             ->throw();
 
         return GenerationData::fromArray($response->json());
+    }
+
+    public function usage(?string $startDate = null, ?string $endDate = null): UsageData
+    {
+        $query = array_filter([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
+
+        $cacheKey = 'pixelforge:usage:' . hash('xxh128', $this->apiKey . '|' . json_encode($query));
+
+        $payload = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($query): array {
+            return $this->client()
+                ->get('/usage', $query)
+                ->throw()
+                ->json();
+        });
+
+        return UsageData::fromArray($payload);
     }
 
     public function find(string $generationId): GenerationData

@@ -53,8 +53,8 @@ test('includes generation history on every authenticated inertia route', functio
             return in_array('auth', $middlewares)
                 && ! str_contains($route->uri(), '{')
                 && ! str_starts_with($route->uri(), '_')
-                && ! collect($exemptedPrefixes)
-                    ->contains(fn ($prefix): bool => str_starts_with($route->uri(), $prefix));
+                && collect($exemptedPrefixes)
+                    ->doesntContain(fn ($prefix): bool => str_starts_with($route->uri(), $prefix));
         })
         ->map(fn ($route): string => '/'.ltrim($route->uri(), '/'))
         ->unique();
@@ -65,16 +65,16 @@ test('includes generation history on every authenticated inertia route', functio
         $response = $this->actingAs($user)
             ->get($uri);
 
-            if($response->getStatusCode() === 302){
-                continue; // Skip routes that redirect (e.g., logout, etc.)
-            }else{
-                $response->assertOk();
-            }
+        if ($response->getStatusCode() === 302) {
+            continue; // Skip routes that redirect (e.g., logout, etc.)
+        } else {
+            $response->assertOk();
+        }
 
-            $response->assertInertia(fn (Assert $page): AssertableInertia => $page
-                ->has('generationHistory.data', 1)
-                ->where('generationHistory.data.0.id', $generation->id)
-                ->where('generationHistory.data.0.status', 'succeeded')
-            );
+        $response->assertInertia(fn (Assert $page): AssertableInertia => $page
+            ->has('generationHistory.data', 1)
+            ->where('generationHistory.data.0.id', $generation->id)
+            ->where('generationHistory.data.0.status', 'succeeded')
+        );
     }
 });

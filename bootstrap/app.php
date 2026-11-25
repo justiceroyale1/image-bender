@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->preventRequestForgery(except: [
-            'webhooks/pixelforge'
+            'webhooks/pixelforge',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
