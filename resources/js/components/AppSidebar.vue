@@ -14,6 +14,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import NavHistory from '@/components/NavHistory.vue';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import { create } from '@/routes/generations';
@@ -61,6 +62,7 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+            <NavHistory />
         </SidebarContent>
 
         <SidebarFooter>

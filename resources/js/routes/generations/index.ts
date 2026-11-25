@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,89 +81,8 @@ createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 create.form = createForm
 
 /**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
-    method: 'get',
-})
-
-index.definition = {
-    methods: ["get","head"],
-    url: '/generations',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-index.url = (options?: RouteQueryOptions) => {
-    return index.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ImageGenerationController::index
-* @see app/Http/Controllers/ImageGenerationController.php:0
-* @route '/generations'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
-/**
 * @see \App\Http\Controllers\ImageGenerationController::store
-* @see app/Http/Controllers/ImageGenerationController.php:13
+* @see app/Http/Controllers/ImageGenerationController.php:28
 * @route '/generations'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -178,7 +97,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::store
-* @see app/Http/Controllers/ImageGenerationController.php:13
+* @see app/Http/Controllers/ImageGenerationController.php:28
 * @route '/generations'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -187,7 +106,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::store
-* @see app/Http/Controllers/ImageGenerationController.php:13
+* @see app/Http/Controllers/ImageGenerationController.php:28
 * @route '/generations'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -197,7 +116,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::store
-* @see app/Http/Controllers/ImageGenerationController.php:13
+* @see app/Http/Controllers/ImageGenerationController.php:28
 * @route '/generations'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +126,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::store
-* @see app/Http/Controllers/ImageGenerationController.php:13
+* @see app/Http/Controllers/ImageGenerationController.php:28
 * @route '/generations'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -219,10 +138,10 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-export const show = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -234,12 +153,16 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-show.url = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions) => {
+show.url = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { generation: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'ulid' in args) {
+        args = { generation: args.ulid }
     }
 
     if (Array.isArray(args)) {
@@ -251,7 +174,9 @@ show.url = (args: { generation: string | number } | [generation: string | number
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        generation: args.generation,
+        generation: typeof args.generation === 'object'
+        ? args.generation.ulid
+        : args.generation,
     }
 
     return show.definition.url
@@ -261,50 +186,50 @@ show.url = (args: { generation: string | number } | [generation: string | number
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-show.get = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-show.head = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-const showForm = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-showForm.get = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\ImageGenerationController::show
-* @see app/Http/Controllers/ImageGenerationController.php:0
+* @see app/Http/Controllers/ImageGenerationController.php:37
 * @route '/generations/{generation}'
 */
-showForm.head = (args: { generation: string | number } | [generation: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { generation: string | { ulid: string } } | [generation: string | { ulid: string } ] | string | { ulid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -318,7 +243,6 @@ show.form = showForm
 
 const generations = {
     create: Object.assign(create, create),
-    index: Object.assign(index, index),
     store: Object.assign(store, store),
     show: Object.assign(show, show),
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum Quality: string
@@ -33,6 +35,6 @@ enum Quality: string
     {
         $range = $this->reasoningRange();
 
-        return (int) intdiv($range[ReasoningLevel::Min->value] + $range[ReasoningLevel::Max->value], 2);
+        return intdiv($range[ReasoningLevel::Min->value] + $range[ReasoningLevel::Max->value], 2);
     }
 }

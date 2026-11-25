@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
-enum Status: string {
+enum Status: string
+{
     case Queued = 'queued';
     case Processing = 'processing';
-    case Succeeded  = 'succeeded';
+    case Succeeded = 'succeeded';
     case Failed = 'failed';
-
 
     public function isTerminal(): bool
     {
@@ -16,12 +18,11 @@ enum Status: string {
 
     public function succeeded(): bool
     {
-        return $this->status === self::Succeeded;
+        return $this === self::Succeeded;
     }
 
     public function failed(): bool
     {
-        return $this->status === self::Failed;
+        return $this === self::Failed;
     }
-
 }

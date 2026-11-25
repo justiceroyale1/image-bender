@@ -9,12 +9,12 @@ use App\Services\ImageGeneration\MockImageGenerator;
 use App\Services\ImageGeneration\PixelforgeImageGenerator;
 use Illuminate\Support\Facades\Http;
 
-test('container resolves mock image generator by default in tests', function () {
-    expect(app(ImageGenerator::class))->toBeInstanceOf(MockImageGenerator::class);
+test('container resolves mock image generator by default in tests', function (): void {
+    expect(resolve(ImageGenerator::class))->toBeInstanceOf(MockImageGenerator::class);
 });
 
-test('mock image generator simulates lifecycle and fail keyword', function () {
-    $generator = new MockImageGenerator();
+test('mock image generator simulates lifecycle and fail keyword', function (): void {
+    $generator = new MockImageGenerator;
 
     $successModel = ImageGeneration::factory()->create([
         'prompt' => 'A peaceful mountain lake',
@@ -38,7 +38,7 @@ test('mock image generator simulates lifecycle and fail keyword', function () {
     expect($failedResult->status)->toBe(Status::Failed->value);
 });
 
-test('pixelforge image generator sends expected payload and headers', function () {
+test('pixelforge image generator sends expected payload and headers', function (): void {
     Http::fake([
         'https://promptedit.dev/generations' => Http::response([
             'id' => 'gen_01JC2Z8Q4N6V0M3H7X5T9R2B1K',
@@ -66,13 +66,11 @@ test('pixelforge image generator sends expected payload and headers', function (
     expect($result->id)->toBe('gen_01JC2Z8Q4N6V0M3H7X5T9R2B1K')
         ->and($result->status)->toBe(Status::Queued->value);
 
-    Http::assertSent(function ($request) use ($model) {
-        return $request->url() === 'https://promptedit.dev/generations'
-            && $request->hasHeader('Authorization', 'Bearer pf_test_secret')
-            && $request->hasHeader('Idempotency-Key', 'uuid-999')
-            && $request['prompt'] === 'A lighthouse on a cliff'
-            && $request['size'] === '1536x1024'
-            && $request['quality'] === 'high'
-            && $request['metadata'] === ['generation_id' => (string) $model->id];
-    });
+    Http::assertSent(fn ($request): bool => $request->url() === 'https://promptedit.dev/generations'
+        && $request->hasHeader('Authorization', 'Bearer pf_test_secret')
+        && $request->hasHeader('Idempotency-Key', 'uuid-999')
+        && $request['prompt'] === 'A lighthouse on a cliff'
+        && $request['size'] === '1536x1024'
+        && $request['quality'] === 'high'
+        && $request['metadata'] === ['generation_id' => (string) $model->id]);
 });

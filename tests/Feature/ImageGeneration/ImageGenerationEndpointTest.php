@@ -7,13 +7,13 @@ use App\Models\ImageGeneration;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
-use Illuminate\Testing\Fluent\AssertableJson;
 
 use function Pest\Laravel\withoutExceptionHandling;
 
-function newImageGenerationPayload($overrides = []){
+function newImageGenerationPayload($overrides = []): array
+{
     return array_merge([
-        'prompt' => "An epic battle in space",
+        'prompt' => 'An epic battle in space',
         'quality' => Quality::High->value,
         'size' => Size::Landscape->value,
         'reference_images' => [
@@ -24,9 +24,9 @@ function newImageGenerationPayload($overrides = []){
     ], $overrides);
 }
 
-test('can request new image generation', function () {
+test('can request new image generation', function (): void {
     Queue::fake();
-    
+
     $user = User::factory()->create();
     $payload = newImageGenerationPayload();
 
@@ -35,10 +35,8 @@ test('can request new image generation', function () {
 
     $imageGeneration = ImageGeneration::latest()->first();
 
-    Queue::assertPushed(SubmitImageGeneration::class, 
-        function (SubmitImageGeneration $job) use ($imageGeneration) {
-            return $job->generation->is($imageGeneration);
-        }
+    Queue::assertPushed(SubmitImageGeneration::class,
+        fn (SubmitImageGeneration $job) => $job->generation->is($imageGeneration)
     );
 
     $this->assertNotNull($imageGeneration);
@@ -46,14 +44,14 @@ test('can request new image generation', function () {
     $response->assertRedirectToRoute('generations.show', $imageGeneration->ulid);
 });
 
-test('prompt, quality, size, and idempotency_key are required for image generation', function () {
+test('prompt, quality, size, and idempotency_key are required for image generation', function (): void {
     // withoutExceptionHandling();
 
     $payload = newImageGenerationPayload([
         'prompt' => null,
         'quality' => null,
         'size' => null,
-        'idempotency_key' => null
+        'idempotency_key' => null,
     ]);
 
     $user = User::factory()->create();
@@ -64,7 +62,7 @@ test('prompt, quality, size, and idempotency_key are required for image generati
     $response->assertInvalid(['prompt', 'quality', 'size', 'idempotency_key']);
 });
 
-test('image generation prompt is capped at 4000 characters', function () {
+test('image generation prompt is capped at 4000 characters', function (): void {
     // withoutExceptionHandling();
 
     $payload = newImageGenerationPayload([

@@ -6,6 +6,7 @@ use App\Contracts\ImageGenerator;
 use App\Services\ImageGeneration\MockImageGenerator;
 use App\Services\ImageGeneration\PixelforgeImageGenerator;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -18,14 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(ImageGenerator::class, function ($app) {
-            return match(config('ai-image.driver')){
-                'pixelforge' => new PixelforgeImageGenerator(
-                    baseUrl: config('ai-image.base_url'),
-                    apiKey: config('ai-image.api_key'),
-                ),
-                default => new MockImageGenerator(),
-            };
+        $this->app->singleton(fn ($app): ImageGenerator => match (config('ai-image.driver')) {
+            'pixelforge' => new PixelforgeImageGenerator(
+                baseUrl: config('ai-image.base_url'),
+                apiKey: config('ai-image.api_key'),
+            ),
+            default => new MockImageGenerator,
         });
     }
 
@@ -57,5 +56,7 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+
+        JsonResource::withoutWrapping();
     }
 }

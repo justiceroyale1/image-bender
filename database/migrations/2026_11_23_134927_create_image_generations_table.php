@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('image_generations', function (Blueprint $table) {
+        Schema::create('image_generations', function (Blueprint $table): void {
             $table->id();
             $table->ulid('ulid')->unique()->after('id');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

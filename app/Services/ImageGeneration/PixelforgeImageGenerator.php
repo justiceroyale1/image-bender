@@ -6,7 +6,6 @@ use App\Contracts\ImageGenerator;
 use App\Data\GenerationData;
 use App\Models\ImageGeneration;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class PixelforgeImageGenerator implements ImageGenerator
@@ -26,7 +25,7 @@ class PixelforgeImageGenerator implements ImageGenerator
             'metadata' => [
                 'generation_id' => (string) $generation->id,
             ],
-        ], fn ($value) => $value !== null);
+        ], fn (string|array|null $value): bool => $value !== null);
 
         $response = $this->client()
             ->withHeaders([

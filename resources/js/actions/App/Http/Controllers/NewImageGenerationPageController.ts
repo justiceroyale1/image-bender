@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 const NewImageGenerationPageController = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ NewImageGenerationPageController.definition = {
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 NewImageGenerationPageController.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ NewImageGenerationPageController.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 NewImageGenerationPageController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ NewImageGenerationPageController.get = (options?: RouteQueryOptions): RouteDefin
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 NewImageGenerationPageController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ NewImageGenerationPageController.head = (options?: RouteQueryOptions): RouteDefi
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 const NewImageGenerationPageControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const NewImageGenerationPageControllerForm = (options?: RouteQueryOptions): Rout
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 NewImageGenerationPageControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ NewImageGenerationPageControllerForm.get = (options?: RouteQueryOptions): RouteF
 
 /**
 * @see \App\Http\Controllers\NewImageGenerationPageController::__invoke
-* @see app/Http/Controllers/NewImageGenerationPageController.php:11
+* @see app/Http/Controllers/NewImageGenerationPageController.php:10
 * @route '/generations/new'
 */
 NewImageGenerationPageControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

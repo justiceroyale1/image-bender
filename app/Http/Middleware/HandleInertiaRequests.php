@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ImageGeneration;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +44,20 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'generationHistory' => fn () => $request->user()
+                ? Inertia::scroll(
+                    fn () => $request->user()
+                        ->generations()
+                        ->latest()
+                        ->cursorPaginate(20)
+                        ->through(fn (ImageGeneration $gen): array => [
+                            'id' => $gen->id,
+                            'title' => $gen->prompt_title,
+                            'url' => route('generations.show', $gen),
+                            'status' => $gen->status,
+                        ])
+                )
+                : null,
         ];
     }
 }

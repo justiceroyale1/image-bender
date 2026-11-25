@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Contracts\ImageGenerator;
@@ -9,13 +10,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\RequestException;
 
-class SubmitImageGeneration implements ShouldQueue, ShouldBeUnique
+class SubmitImageGeneration implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
     public int $tries = 5;
-    public int $uniqueFor = 3600; // Lock expires after 1 hour as a safety net
 
+    public int $uniqueFor = 3600; // Lock expires after 1 hour as a safety net
 
     public function __construct(
         public ImageGeneration $generation,
@@ -35,7 +36,7 @@ class SubmitImageGeneration implements ShouldQueue, ShouldBeUnique
             if ($this->generation->provider_id !== null || $this->generation->status?->isTerminal()) {
                 return;
             }
-            
+
             $data = $generator->generate($this->generation);
 
             $this->generation->update([
@@ -53,6 +54,7 @@ class SubmitImageGeneration implements ShouldQueue, ShouldBeUnique
 
                 // Add exponential jitter on top of Retry-After
                 $this->release($retryAfter * $this->attempts());
+
                 return;
             }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Enums\Quality;
@@ -10,14 +12,6 @@ use Illuminate\Validation\Rule;
 
 class StoreImageGenerationRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,7 +25,7 @@ class StoreImageGenerationRequest extends FormRequest
             'size' => ['required', Rule::enum(Size::class)],
             'idempotency_key' => ['required', 'uuid:4'],
             'reference_images' => ['array', 'nullable'],
-            'reference_images.*' => ['url']
+            'reference_images.*' => ['url'],
         ];
     }
 }

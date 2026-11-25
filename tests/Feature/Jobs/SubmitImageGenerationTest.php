@@ -1,4 +1,5 @@
 <?php
+
 use App\Contracts\ImageGenerator;
 use App\Enums\Quality;
 use App\Enums\Size;
@@ -10,8 +11,8 @@ use App\Services\ImageGeneration\MockImageGenerator;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
-test('submit image generation job uses mock driver and updates model', function () {
-    expect(app(ImageGenerator::class))->toBeInstanceOf(MockImageGenerator::class);
+test('submit image generation job uses mock driver and updates model', function (): void {
+    expect(resolve(ImageGenerator::class))->toBeInstanceOf(MockImageGenerator::class);
 
     $generation = ImageGeneration::factory()->create([
         'prompt' => 'A lighthouse on a cliff at dawn',
@@ -19,7 +20,7 @@ test('submit image generation job uses mock driver and updates model', function 
         'size' => Size::Landscape,
     ]);
 
-    SubmitImageGeneration::dispatchSync($generation);
+    dispatch_sync(new SubmitImageGeneration($generation));
 
     $generation->refresh();
 
@@ -27,7 +28,7 @@ test('submit image generation job uses mock driver and updates model', function 
         ->and($generation->provider_id)->toStartWith('gen_mock_');
 });
 
-test('submit image generation job marks generation failed on non-retryable api error', function () {
+test('submit image generation job marks generation failed on non-retryable api error', function (): void {
     config()->set('ai-image.driver', 'pixelforge');
     config()->set('ai-image.base_url', 'https://promptedit.dev');
     config()->set('ai-image.api_key', 'test-key');
@@ -56,7 +57,7 @@ test('submit image generation job marks generation failed on non-retryable api e
     $job = (new SubmitImageGeneration($generation))->withFakeQueueInteractions();
 
     try {
-        app()->call([$job, 'handle']);
+        app()->call($job->handle(...));
     } catch (RequestException) {
         // Expected when $this->fail($e) is called inside handle()
     }
@@ -69,7 +70,7 @@ test('submit image generation job marks generation failed on non-retryable api e
         ]);
 });
 
-test('submit image generation job releases back to queue on 429 rate limit', function () {
+test('submit image generation job releases back to queue on 429 rate limit', function (): void {
     config()->set('ai-image.driver', 'pixelforge');
     config()->set('ai-image.base_url', 'https://promptedit.dev');
     config()->set('ai-image.api_key', 'test-key');
@@ -91,7 +92,7 @@ test('submit image generation job releases back to queue on 429 rate limit', fun
 
     $job = (new SubmitImageGeneration($generation))->withFakeQueueInteractions();
 
-    app()->call([$job, 'handle']);
+    app()->call($job->handle(...));
 
     $job->assertReleased(delay: 5);
     expect($generation->fresh()->status)->toBe(Status::Queued);

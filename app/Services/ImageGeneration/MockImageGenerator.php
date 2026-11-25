@@ -25,7 +25,7 @@ class MockImageGenerator implements ImageGenerator
 
     public function generate(ImageGeneration $generation): GenerationData
     {
-        $id = 'gen_mock_' . Str::ulid();
+        $id = 'gen_mock_'.Str::ulid();
         $size = ($generation->size ?? Size::Square)->value;
         $quality = ($generation->quality ?? Quality::Medium)->value;
         $referenceImages = $generation->reference_images ?? [];
@@ -90,7 +90,7 @@ class MockImageGenerator implements ImageGenerator
             quality: $quality->value,
             referenceImages: $referenceImages,
             metadata: $metadata,
-            imageUrl: "https://placehold.co{$size->value}.png?text=" . urlencode(Str::limit($prompt, 30)),
+            imageUrl: "https://placehold.co{$size->value}.png?text=".urlencode(Str::limit($prompt, 30)),
             imageUrlExpiresAt: $completedAt->addHours(24),
             usage: [
                 'input_text_tokens' => $inputTextTokens,

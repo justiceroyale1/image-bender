@@ -33,6 +33,9 @@ readonly class GenerationData
         public ?CarbonImmutable $completedAt = null,
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -84,7 +87,7 @@ readonly class GenerationData
      */
     public function costUsd(): string
     {
-        if (! $this->succeeded() || empty($this->usage) || empty($this->rates)) {
+        if (! $this->succeeded() || empty($this->usage) || $this->rates === []) {
             return '0.000000000';
         }
 

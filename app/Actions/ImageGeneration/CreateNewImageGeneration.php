@@ -6,12 +6,13 @@ use App\Data\ImageGeneration\NewImageGenerationData;
 use App\Jobs\SubmitImageGeneration;
 use App\Models\ImageGeneration;
 
-class CreateNewImageGeneration{
+class CreateNewImageGeneration
+{
     public function execute(NewImageGenerationData $data): ImageGeneration
     {
         $generation = ImageGeneration::firstOrCreate([
             'user_id' => $data->userId,
-            'idempotency_key' => $data->idempotencyKey
+            'idempotency_key' => $data->idempotencyKey,
         ], [
             'prompt' => $data->prompt,
             'quality' => $data->quality,
@@ -20,7 +21,7 @@ class CreateNewImageGeneration{
         ]);
 
         if ($generation->wasRecentlyCreated || $generation->dispatched_at === null) {
-            SubmitImageGeneration::dispatch($generation)->afterCommit();
+            dispatch(new SubmitImageGeneration($generation))->afterCommit();
             $generation->update(['dispatched_at' => now()]);
         }
 

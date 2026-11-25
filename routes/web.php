@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 Route::redirect('/', '/login')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('generations/new', NewImageGenerationPageController::class)
         ->name('generations.create');
     Route::resource('generations', ImageGenerationController::class)
-        ->only(['store', 'show', 'index']);
+        ->only(['store', 'show']);
 });
 
 // phpinfo() prints every environment variable, including APP_KEY and DB_PASSWORD
@@ -23,7 +23,7 @@ if (app()->isLocal()) {
     Route::get('/info', function () {
         Log::info('Phpinfo page visited');
 
-        return response()->stream(fn () => phpinfo());
+        return response()->stream(fn (): true => phpinfo());
     });
 }
 
@@ -36,7 +36,7 @@ Route::get('/health', function () {
         // Optionally, run a simple query
         DB::select('SELECT 1');
         $status['database'] = 'OK';
-    } catch (Exception $e) {
+    } catch (Exception) {
         $status['database'] = 'Error';
     }
 
@@ -49,7 +49,7 @@ Route::get('/health', function () {
         } else {
             $status['redis'] = 'Error';
         }
-    } catch (Exception $e) {
+    } catch (Exception) {
         $status['redis'] = 'Error';
     }
 
@@ -65,14 +65,12 @@ Route::get('/health', function () {
         } else {
             $status['storage'] = 'Error';
         }
-    } catch (Exception $e) {
+    } catch (Exception) {
         $status['storage'] = 'Error';
     }
 
     // Determine overall health status
-    $isHealthy = collect($status)->every(function ($value) {
-        return $value === 'OK';
-    });
+    $isHealthy = collect($status)->every(fn ($value): bool => $value === 'OK');
 
     $httpStatus = $isHealthy ? 200 : 503;
 

@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class NewImageGenerationData
 {
     /**
-     * @param array<int, string> $referenceImages
+     * @param  array<int, string>  $referenceImages
      */
     public function __construct(
         public string $idempotencyKey,
@@ -17,8 +17,7 @@ class NewImageGenerationData
         public string $size,
         public array $referenceImages,
         public int $userId
-    )
-    {}
+    ) {}
 
     public static function fromRequest(StoreImageGenerationRequest $request): self
     {
