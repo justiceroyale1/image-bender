@@ -23,6 +23,7 @@ class UsageRequest extends FormRequest
         return [
             'start_date' => ['nullable', 'date_format:Y-m-d'],
             'end_date' => [
+                'bail',
                 'nullable',
                 'date_format:Y-m-d',
                 'after_or_equal:start_date',
@@ -31,8 +32,12 @@ class UsageRequest extends FormRequest
                         return;
                     }
 
-                    $start = CarbonImmutable::createFromFormat('Y-m-d', (string) $this->input('start_date'));
-                    $end = CarbonImmutable::createFromFormat('Y-m-d', $value);
+                    try {
+                        $start = CarbonImmutable::createFromFormat('Y-m-d', (string) $this->input('start_date'));
+                        $end = CarbonImmutable::createFromFormat('Y-m-d', $value);
+                    } catch (\Throwable) {
+                        return;
+                    }
 
                     if ($start && $end && ($start->diffInDays($end) + 1) > 92) {
                         $fail('The date range cannot exceed 92 days.');
