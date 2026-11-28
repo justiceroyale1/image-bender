@@ -44,9 +44,12 @@ class DashboardController extends Controller
                     return [
                         'error' => $e->response->json('error.message') ?? 'Unable to fetch usage data.',
                     ];
-                } catch (ConnectionException $e){
+                } 
+                catch (ConnectionException $e){
+                    logger()->critical($e->getMessage(), $e->getTrace());
+
                     return [
-                        'error' => $e->getMessage(),
+                        'error' => 'Connection failed.',
                     ];
                 }
             }),

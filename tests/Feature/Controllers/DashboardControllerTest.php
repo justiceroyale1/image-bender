@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia as Assert;
 
+use function Pest\Laravel\actingAs;
+
 beforeEach(function () {
     Cache::flush();
     config(['ai-image.driver' => 'mock']);
@@ -102,25 +104,25 @@ test('falls back to a generic error message when deferred request fails without 
 });
 
 
-// test('displays connection error message when ConnectionException is thrown on deferred request', function () {
-//     config(['ai-image.driver' => 'pixelforge']);
+test('returns an error in usageSummary when the third-party API is unreachable', function () {
+    $user = User::factory()->create();
 
-//     $message = 'cURL error 28: Resolving timed out after 10000 milliseconds (see https://curl.se/libcurl/c/libcurl-errors.html) for https://pixelforge.promptedit.dev/v1/usage';
+    config(['ai-image.driver' => 'pixelforge']);
 
-//     Http::fake([
-//         '*/usage*' => Http::response([
-//             'error' => ['message' => $message],
-//         ], 500),
-//     ]);
+    Http::fake(function () {
+        throw new ConnectionException('cURL error 28: Operation timed out');
+    });
 
-//     test()->get(route('dashboard'))
-//         ->assertOk()
-//         ->assertInertia(fn (Assert $page) => $page
-//             ->component('Dashboard')
-//             ->loadDeferredProps(fn (Assert $reload) => $reload
-//                 ->where('usageSummary', [
-//                     'error' => $message,
-//                 ])
-//             )
-//         );
-// });
+    actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard')
+            ->missing('usageSummary')
+            ->loadDeferredProps(fn (Assert $reload) => $reload
+                ->where('usageSummary', [
+                    'error' => 'Connection failed.',
+                ])
+            )
+        );
+});
