@@ -46,14 +46,12 @@ class PixelforgeImageGenerator implements ImageGenerator
             'end_date' => $endDate,
         ]);
 
-        $cacheKey = 'pixelforge:usage:' . hash('xxh128', $this->apiKey . '|' . json_encode($query));
+        $cacheKey = 'pixelforge:usage:'.hash('xxh128', $this->apiKey.'|'.json_encode($query));
 
-        $payload = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($query): array {
-            return $this->client()
-                ->get('/usage', $query)
-                ->throw()
-                ->json();
-        });
+        $payload = Cache::remember($cacheKey, now()->addMinutes(5), fn (): array => $this->client()
+            ->get('/usage', $query)
+            ->throw()
+            ->json());
 
         return UsageData::fromArray($payload);
     }

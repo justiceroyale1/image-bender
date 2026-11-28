@@ -5,7 +5,9 @@ use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
+use Inertia\Testing\AssertableInertia;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
@@ -16,16 +18,16 @@ beforeEach(function () {
     test()->actingAs(User::factory()->create());
 });
 
-afterEach(function () {
-    Carbon::setTestNow();
+afterEach(function (): void {
+    Date::setTestNow();
 });
 
-test('renders the usage page with 30 days of data by default', function () {
-    Carbon::setTestNow('2026-01-30 12:00:00');
+test('renders the usage page with 30 days of data by default', function (): void {
+    Date::setTestNow('2026-01-30 12:00:00');
 
     test()->get(route('usage.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('filters', [])
             ->loadDeferredProps(fn (Assert $reload) => $reload
@@ -48,8 +50,8 @@ test('renders the usage page with 30 days of data by default', function () {
         );
 });
 
-test('renders the usage page with date filters and applies 1.25x markup', function () {
-    $expectedMarkedUpTotal = app(ImageGenerator::class)
+test('renders the usage page with date filters and applies 1.25x markup', function (): void {
+    $expectedMarkedUpTotal = resolve(ImageGenerator::class)
         ->usage('2026-01-01', '2026-01-31')
         ->withMarkup()
         ->total
@@ -60,7 +62,7 @@ test('renders the usage page with date filters and applies 1.25x markup', functi
         'end_date' => '2026-01-31',
     ]))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('filters', [
                 'start_date' => '2026-01-01',
@@ -78,7 +80,7 @@ test('renders the usage page with date filters and applies 1.25x markup', functi
         );
 });
 
-test('handles upstream api request exceptions gracefully', function () {
+test('handles upstream api request exceptions gracefully', function (): void {
     // Switch to the real HTTP-backed driver and fake the HTTP layer
     config(['ai-image.driver' => 'pixelforge']);
 
@@ -90,7 +92,7 @@ test('handles upstream api request exceptions gracefully', function () {
 
     test()->get(route('usage.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->loadDeferredProps(fn (Assert $reload) => $reload                
                 ->missing('deferred.usage')
@@ -99,7 +101,7 @@ test('handles upstream api request exceptions gracefully', function () {
         );
 });
 
-test('falls back to a generic error message when request exception lacks an error message', function () {
+test('falls back to a generic error message when request exception lacks an error message', function (): void {
     config(['ai-image.driver' => 'pixelforge']);
 
     Http::fake([
@@ -171,7 +173,7 @@ describe('validation', function () {
         ]))
             ->assertSessionHasNoErrors()
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
+            ->assertInertia(fn (Assert $page): AssertableInertia => $page
                 ->component('usage/Index')
                 ->loadDeferredProps(fn (Assert $reload) => $reload
                     ->has('deferred.usage.data', 92)

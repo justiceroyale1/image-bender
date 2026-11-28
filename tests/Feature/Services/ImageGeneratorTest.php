@@ -1,18 +1,17 @@
 <?php
 
 use App\Contracts\ImageGenerator;
+use App\Data\ImageGeneration\UsageData;
 use App\Enums\Quality;
 use App\Enums\Size;
 use App\Enums\Status;
 use App\Models\ImageGeneration;
 use App\Services\ImageGeneration\MockImageGenerator;
 use App\Services\ImageGeneration\PixelforgeImageGenerator;
-use Illuminate\Support\Facades\Http;
-use App\Data\ImageGeneration\UsageData;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Http;
 
 test('container resolves mock image generator by default in tests', function (): void {
     expect(resolve(ImageGenerator::class))->toBeInstanceOf(MockImageGenerator::class);
@@ -83,7 +82,7 @@ test('pixelforge image generator sends expected payload and headers', function (
 // ... existing generate() tests ...
 
 test('mock image generator returns 30 days of deterministic usage by default', function (): void {
-    Carbon::setTestNow('2026-01-30 12:00:00');
+    Date::setTestNow('2026-01-30 12:00:00');
 
     $generator = new MockImageGenerator;
     $usage = $generator->usage();
@@ -101,7 +100,7 @@ test('mock image generator returns 30 days of deterministic usage by default', f
     expect($secondCall->total->costUsd)->toBe($usage->total->costUsd)
         ->and($secondCall->total->generations)->toBe($usage->total->generations);
 
-    Carbon::setTestNow();
+    Date::setTestNow();
 });
 
 test('mock image generator aggregates succeeded in-memory generations into usage buckets', function (): void {
@@ -119,7 +118,7 @@ test('mock image generator aggregates succeeded in-memory generations into usage
 
     expect($completed->status)->toBe(Status::Succeeded->value);
 
-    $today = Carbon::now('UTC')->format('Y-m-d');
+    $today = Date::now('UTC')->format('Y-m-d');
     $usage = $generator->usage($today, $today);
 
     expect($usage->startDate)->toBe($today)
@@ -208,5 +207,3 @@ test('pixelforge image generator omits null date query parameters and throws on 
     Http::assertSent(fn ($request): bool => $request->url() === "{$baseUrl}/usage"
         && $request->data() === []);
 });
-
-

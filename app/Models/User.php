@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -23,6 +24,9 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $remember_token
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
+ * @property-read Collection<int, CreditPurchase> $creditPurchases
+ * @property-read int|null $credit_purchases_count
+ * @property-read CreditWallet|null $creditWallet
  * @property-read Collection<int, ImageGeneration> $generations
  * @property-read int|null $generations_count
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
@@ -69,5 +73,21 @@ class User extends Authenticatable
     public function generations(): HasMany
     {
         return $this->hasMany(ImageGeneration::class);
+    }
+
+    /**
+     * @return HasOne<CreditWallet, $this>
+     */
+    public function creditWallet(): HasOne
+    {
+        return $this->hasOne(CreditWallet::class);
+    }
+
+    /**
+     * @return HasMany<CreditPurchase, $this>
+     */
+    public function creditPurchases(): HasMany
+    {
+        return $this->hasMany(CreditPurchase::class);
     }
 }

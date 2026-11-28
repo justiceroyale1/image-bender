@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Contracts\ImageGenerator;
 use Illuminate\Http\Client\ConnectionException;
+use App\Data\ImageGeneration\UsageBucketData;
 use Illuminate\Http\Client\RequestException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,7 +36,7 @@ class DashboardController extends Controller
                         'today_generations' => $today->generations ?? 0,
                         'today_billed_usd' => $today->costUsd ?? '0.000000000',
                         'recent_days' => array_map(
-                            fn ($day): array => $day->toArray(),
+                            fn (UsageBucketData $day): array => $day->toArray(),
                             array_slice($usage->data, -7)
                         ),
                         'error' => null,
