@@ -14,10 +14,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property int $user_id
- * @property float $balance
+ * @property int|float $balance
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  *
+ * @method static \Database\Factories\CreditWalletFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditWallet newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditWallet newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditWallet query()

@@ -3,7 +3,6 @@
 use App\Contracts\ImageGenerator;
 use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
@@ -22,7 +21,7 @@ afterEach(function (): void {
     Date::setTestNow();
 });
 
-test('defers usageSummary on initial dashboard load', function () {
+test('defers usageSummary on initial dashboard load', function (): void {
     test()->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page): AssertableInertia => $page
@@ -105,23 +104,22 @@ test('falls back to a generic error message when deferred request fails without 
         );
 });
 
-
-test('returns an error in usageSummary when the third-party API is unreachable', function () {
+test('returns an error in usageSummary when the third-party API is unreachable', function (): void {
     $user = User::factory()->create();
 
     config(['ai-image.driver' => 'pixelforge']);
 
-    Http::fake(function () {
+    Http::fake(function (): void {
         throw new ConnectionException('cURL error 28: Operation timed out');
     });
 
     actingAs($user)
         ->get(route('dashboard'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): Assert => $page
             ->component('Dashboard')
             ->missing('usageSummary')
-            ->loadDeferredProps(fn (Assert $reload) => $reload
+            ->loadDeferredProps(fn (Assert $reload): Assert => $reload
                 ->where('usageSummary', [
                     'error' => 'Connection failed.',
                 ])

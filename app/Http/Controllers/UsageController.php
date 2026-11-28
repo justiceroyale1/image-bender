@@ -39,7 +39,7 @@ class UsageController extends Controller
 
         return Inertia::render('usage/Index', [
             'filters' => $request->filters(),
-            'deferred' => Inertia::defer(function () use ($request, $generator){
+            'deferred' => Inertia::defer(function () use ($request, $generator): array {
                 try {
                     $usage = $generator->usage($request->startDate(), $request->endDate())
                         ->withMarkup();
@@ -51,16 +51,16 @@ class UsageController extends Controller
                 } catch (RequestException $e) {
                     return [
                         'error' => $e->response->json('error.message')
-                            ?? 'Unable to fetch usage data.'
+                            ?? 'Unable to fetch usage data.',
                     ];
                 } catch (ConnectionException $e) {
                     logger()->critical($e->getMessage(), $e->getTrace());
 
                     return [
-                        'error' => 'Connection failed.'
+                        'error' => 'Connection failed.',
                     ];
                 }
-            })
+            }),
         ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\CreditWallet;
@@ -20,7 +22,7 @@ class CreditWalletFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'balance' => $this->faker->randomFloat(2, 0, 1000), // Random balance between 0 and 1000
+            'balance' => fake()->randomFloat(2, 0, 1000), // Random balance between 0 and 1000
         ];
     }
 }

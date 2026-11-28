@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Contracts\ImageGenerator;
-use Illuminate\Http\Client\ConnectionException;
 use App\Data\ImageGeneration\UsageBucketData;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -45,8 +45,7 @@ class DashboardController extends Controller
                     return [
                         'error' => $e->response->json('error.message') ?? 'Unable to fetch usage data.',
                     ];
-                } 
-                catch (ConnectionException $e){
+                } catch (ConnectionException $e) {
                     logger()->critical($e->getMessage(), $e->getTrace());
 
                     return [

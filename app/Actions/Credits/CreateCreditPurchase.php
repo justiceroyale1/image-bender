@@ -20,8 +20,8 @@ class CreateCreditPurchase
                 'amount' => $amount,
             ]);
 
-            if(!$purchase->wasRecentlyCreated) {
-                throw new DuplicateCreditPurchased();
+            if (! $purchase->wasRecentlyCreated) {
+                throw new DuplicateCreditPurchased;
             }
 
             $this->addToCreditWallet->forUser($buyer, $amount);

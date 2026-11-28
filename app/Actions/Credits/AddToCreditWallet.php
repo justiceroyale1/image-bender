@@ -20,7 +20,6 @@ class AddToCreditWallet
                 ->where('user_id', $user->id)
                 ->first();
 
-
             if (! $wallet) {
                 return $user->creditWallet()
                     ->create([

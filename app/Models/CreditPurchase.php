@@ -14,16 +14,19 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property int $user_id
- * @property int|float $amount
+ * @property string $reference_id
+ * @property float $amount
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  *
+ * @method static \Database\Factories\CreditPurchaseFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereReferenceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreditPurchase whereUserId($value)
  *
@@ -38,7 +41,6 @@ class CreditPurchase extends Model
 {
     /** @use HasFactory<CreditPurchaseFactory> */
     use HasFactory;
-
 
     const SCALE = 1_000_000;
 

@@ -4,6 +4,7 @@ use App\Models\CreditPurchase;
 use App\Models\CreditWallet;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Inertia\Testing\AssertableInertia;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
@@ -12,25 +13,25 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
-describe('index', function () {
-    test('guests are redirected to login', function () {
+describe('index', function (): void {
+    test('guests are redirected to login', function (): void {
         get(route('credits.index'))
             ->assertRedirect(route('login'));
     });
 
-    test('renders the credits index page with 0 available credits when user has no wallet', function () {
+    test('renders the credits index page with 0 available credits when user has no wallet', function (): void {
         $user = User::factory()->create();
 
         actingAs($user)
             ->get(route('credits.index'))
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
+            ->assertInertia(fn (Assert $page): AssertableInertia => $page
                 ->component('credits/Index')
                 ->where('availableCredits', 0)
             );
     });
 
-    test('renders the credits index page with the users current wallet balance', function () {
+    test('renders the credits index page with the users current wallet balance', function (): void {
         $user = User::factory()->create();
         CreditWallet::factory()->create([
             'user_id' => $user->id,
@@ -40,22 +41,22 @@ describe('index', function () {
         actingAs($user)
             ->get(route('credits.index'))
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
+            ->assertInertia(fn (Assert $page): AssertableInertia => $page
                 ->component('credits/Index')
                 ->where('availableCredits', 250.5)
             );
     });
 });
 
-describe('store', function () {
-    test('guests are redirected to login', function () {
+describe('store', function (): void {
+    test('guests are redirected to login', function (): void {
         post(route('credits.store'), [
             'amount' => 500,
             'reference_id' => Str::uuid()->toString(),
         ])->assertRedirect(route('login'));
     });
 
-    test('creates a credit purchase and initializes the users wallet on first purchase', function () {
+    test('creates a credit purchase and initializes the users wallet on first purchase', function (): void {
         $user = User::factory()->create();
         $referenceId = Str::uuid()->toString();
 
@@ -79,7 +80,7 @@ describe('store', function () {
         ]);
     });
 
-    test('increments an existing wallet balance on subsequent purchases', function () {
+    test('increments an existing wallet balance on subsequent purchases', function (): void {
         $user = User::factory()->create();
         CreditWallet::factory()->create([
             'user_id' => $user->id,
@@ -102,7 +103,7 @@ describe('store', function () {
         ]);
     });
 
-    test('validates required and malformed inputs', function (array $payload, array $expectedErrors) {
+    test('validates required and malformed inputs', function (array $payload, array $expectedErrors): void {
         $user = User::factory()->create();
 
         actingAs($user)
@@ -132,7 +133,7 @@ describe('store', function () {
         ],
     ]);
 
-    test('prevents purchasing credits beyond the 1,000,000 wallet limit', function () {
+    test('prevents purchasing credits beyond the 1,000,000 wallet limit', function (): void {
         $user = User::factory()->create();
         CreditWallet::create([
             'user_id' => $user->id,
@@ -151,7 +152,7 @@ describe('store', function () {
         assertDatabaseCount('credit_purchases', 0);
     });
 
-    test('returns an reference_id validation error when DuplicateCreditPurchased is thrown', function () {
+    test('returns an reference_id validation error when DuplicateCreditPurchased is thrown', function (): void {
         $user = User::factory()->create();
         $referenceId = Str::uuid()->toString();
 
@@ -173,10 +174,10 @@ describe('store', function () {
         assertDatabaseCount('credit_purchases', 1);
     });
 
-    test('handles unexpected exceptions gracefully and flashes a general error', function () {
+    test('handles unexpected exceptions gracefully and flashes a general error', function (): void {
         $user = User::factory()->create();
 
-        CreditWallet::creating(function () {
+        CreditWallet::creating(function (): void {
             throw new RuntimeException('Simulated database failure');
         });
 
@@ -199,19 +200,17 @@ describe('store', function () {
     });
 });
 
-test('renders paginated credit purchase history ordered newest first for the authenticated user', function () {
+test('renders paginated credit purchase history ordered newest first for the authenticated user', function (): void {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
     // Create 12 purchases for the authenticated user with distinct timestamps
-    $purchases = collect(range(1, 12))->map(function (int $i) use ($user) {
-        return CreditPurchase::factory()->create([
-            'user_id' => $user->id,
-            'reference_id' => Str::uuid()->toString(),
-            'amount' => $i * 10,
-            'created_at' => now()->subMinutes(12 - $i),
-        ]);
-    });
+    $purchases = collect(range(1, 12))->map(fn (int $i) => CreditPurchase::factory()->create([
+        'user_id' => $user->id,
+        'reference_id' => Str::uuid()->toString(),
+        'amount' => $i * 10,
+        'created_at' => now()->subMinutes(12 - $i),
+    ]));
 
     // Create a purchase for another user to verify isolation
     CreditPurchase::factory()->create([
@@ -226,7 +225,7 @@ test('renders paginated credit purchase history ordered newest first for the aut
     actingAs($user)
         ->get(route('credits.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('credits/Index')
             ->has('purchases.data', 10)
             ->where('purchases.data.0.id', $newestPurchase->id)
@@ -243,7 +242,7 @@ test('renders paginated credit purchase history ordered newest first for the aut
     actingAs($user)
         ->get(route('credits.index', ['page' => 2]))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('credits/Index')
             ->has('purchases.data', 2)
             ->where('purchases.meta.current_page', 2)

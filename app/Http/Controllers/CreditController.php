@@ -43,6 +43,7 @@ class CreditController extends Controller
             ]);
         } catch (\Exception $e) {
             logger()->critical($e->getMessage(), $e->getTrace());
+
             return back()->withErrors([
                 'general' => 'An error occurred while processing your credit purchase. Please try again later.',
             ]);

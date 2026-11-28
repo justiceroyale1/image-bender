@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\CreditPurchase;
@@ -19,9 +21,9 @@ class CreditPurchaseFactory extends Factory
     public function definition(): array
     {
         return [
-            'reference_id' => $this->faker->uuid(),
+            'reference_id' => fake()->uuid(),
             'user_id' => User::factory(),
-            'amount' => $this->faker->numberBetween(5, 1000),
+            'amount' => fake()->numberBetween(5, 1000),
         ];
     }
 }
