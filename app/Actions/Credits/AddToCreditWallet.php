@@ -20,12 +20,6 @@ class AddToCreditWallet
                 ->where('user_id', $user->id)
                 ->first();
 
-            logger()->info('AddToCreditWallet called', [
-                'amount' => $amount,
-                'wallet_exists' => (bool) $wallet,
-                'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 6),
-            ]);
-
 
             if (! $wallet) {
                 return $user->creditWallet()

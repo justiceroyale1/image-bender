@@ -6,6 +6,7 @@ use App\Actions\Credits\CalculateAvailableCredits;
 use App\Actions\Credits\CreateCreditPurchase;
 use App\Exceptions\Credits\DuplicateCreditPurchased;
 use App\Http\Requests\Credits\StoreCreditPurchaseRequest;
+use App\Http\Resources\CreditPurchaseResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,8 +19,14 @@ class CreditController extends Controller
      */
     public function index(Request $request, CalculateAvailableCredits $action): Response
     {
+        $purchases = $request->user()
+            ->creditPurchases()
+            ->latest()
+            ->paginate(10);
+
         return Inertia::render('credits/Index', [
             'availableCredits' => $action->forUser($request->user()),
+            'purchases' => CreditPurchaseResource::collection($purchases),
         ]);
     }
 

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonImmutable;
+use Database\Factories\CreditPurchaseFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -34,6 +36,10 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class CreditPurchase extends Model
 {
+    /** @use HasFactory<CreditPurchaseFactory> */
+    use HasFactory;
+
+
     const SCALE = 1_000_000;
 
     /**

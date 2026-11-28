@@ -198,3 +198,54 @@ describe('store', function () {
         CreditWallet::flushEventListeners();
     });
 });
+
+test('renders paginated credit purchase history ordered newest first for the authenticated user', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    // Create 12 purchases for the authenticated user with distinct timestamps
+    $purchases = collect(range(1, 12))->map(function (int $i) use ($user) {
+        return CreditPurchase::factory()->create([
+            'user_id' => $user->id,
+            'reference_id' => Str::uuid()->toString(),
+            'amount' => $i * 10,
+            'created_at' => now()->subMinutes(12 - $i),
+        ]);
+    });
+
+    // Create a purchase for another user to verify isolation
+    CreditPurchase::factory()->create([
+        'user_id' => $otherUser->id,
+        'reference_id' => Str::uuid()->toString(),
+        'amount' => 999,
+    ]);
+
+    $newestPurchase = $purchases->last();
+
+    // Page 1: should contain the 10 most recent purchases
+    actingAs($user)
+        ->get(route('credits.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('credits/Index')
+            ->has('purchases.data', 10)
+            ->where('purchases.data.0.id', $newestPurchase->id)
+            ->where('purchases.data.0.reference_id', $newestPurchase->reference_id)
+            ->where('purchases.data.0.amount', 120)
+            ->where('purchases.data.0.created_at', $newestPurchase->created_at->toIso8601String())
+            ->where('purchases.meta.current_page', 1)
+            ->where('purchases.meta.last_page', 2)
+            ->where('purchases.meta.per_page', 10)
+            ->where('purchases.meta.total', 12)
+        );
+
+    // Page 2: should contain the remaining 2 oldest purchases
+    actingAs($user)
+        ->get(route('credits.index', ['page' => 2]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('credits/Index')
+            ->has('purchases.data', 2)
+            ->where('purchases.meta.current_page', 2)
+        );
+});
