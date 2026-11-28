@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 beforeEach(function () {
     Cache::flush();
     config(['ai-image.driver' => 'mock']);
-    $this->actingAs(User::factory()->create());
+    test()->actingAs(User::factory()->create());
 });
 
 afterEach(function () {
@@ -20,25 +20,27 @@ afterEach(function () {
 test('renders the usage page with 30 days of data by default', function () {
     Carbon::setTestNow('2026-01-30 12:00:00');
 
-    $this->get(route('usage.index'))
+    test()->get(route('usage.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('usage/Index')
-            ->where('error', null)
             ->where('filters', [])
-            ->where('usage.start_date', '2026-01-01')
-            ->where('usage.end_date', '2026-01-30')
-            ->has('usage.data', 30)
-            ->has('usage.total', fn (Assert $total) => $total
-                ->hasAll([
-                    'generations',
-                    'input_text_tokens',
-                    'input_image_tokens',
-                    'output_tokens',
-                    'reasoning_tokens',
-                    'billed_usd',
-                ])
-                ->missing('date')
+            ->loadDeferredProps(fn (Assert $reload) => $reload
+                ->where('deferred.error', null)
+                ->where('deferred.usage.start_date', '2026-01-01')
+                ->where('deferred.usage.end_date', '2026-01-30')
+                ->has('deferred.usage.data', 30)
+                ->has('deferred.usage.total', fn (Assert $total) => $total
+                    ->hasAll([
+                        'generations',
+                        'input_text_tokens',
+                        'input_image_tokens',
+                        'output_tokens',
+                        'reasoning_tokens',
+                        'billed_usd',
+                    ])
+                    ->missing('date')
+                )
             )
         );
 });
@@ -50,24 +52,26 @@ test('renders the usage page with date filters and applies 1.25x markup', functi
         ->total
         ->costUsd;
 
-    $this->get(route('usage.index', [
+    test()->get(route('usage.index', [
         'start_date' => '2026-01-01',
         'end_date' => '2026-01-31',
     ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('usage/Index')
-            ->where('error', null)
             ->where('filters', [
                 'start_date' => '2026-01-01',
                 'end_date' => '2026-01-31',
             ])
-            ->where('usage.start_date', '2026-01-01')
-            ->where('usage.end_date', '2026-01-31')
-            ->has('usage.data', 31)
-            ->where('usage.data.0.date', '2026-01-01')
-            ->where('usage.data.30.date', '2026-01-31')
-            ->where('usage.total.billed_usd', $expectedMarkedUpTotal)
+            ->loadDeferredProps(fn (Assert $reload) => $reload                
+                ->where('deferred.error', null)
+                ->where('deferred.usage.start_date', '2026-01-01')
+                ->where('deferred.usage.end_date', '2026-01-31')
+                ->has('deferred.usage.data', 31)
+                ->where('deferred.usage.data.0.date', '2026-01-01')
+                ->where('deferred.usage.data.30.date', '2026-01-31')
+                ->where('deferred.usage.total.billed_usd', $expectedMarkedUpTotal)
+            )
         );
 });
 
@@ -81,12 +85,14 @@ test('handles upstream api request exceptions gracefully', function () {
         ], 502),
     ]);
 
-    $this->get(route('usage.index'))
+    test()->get(route('usage.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('usage/Index')
-            ->where('usage', null)
-            ->where('error', 'Upstream quota exceeded.')
+            ->loadDeferredProps(fn (Assert $reload) => $reload                
+                ->missing('deferred.usage')
+                ->where('deferred.error', 'Upstream quota exceeded.')
+            )
         );
 });
 
@@ -97,32 +103,56 @@ test('falls back to a generic error message when request exception lacks an erro
         '*/usage*' => Http::response([], 500),
     ]);
 
-    $this->get(route('usage.index'))
+    test()->get(route('usage.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('usage/Index')
-            ->where('usage', null)
-            ->where('error', 'Unable to fetch usage data.')
+            ->loadDeferredProps(fn (Assert $reload) => $reload                
+                ->missing('deferred.usage')
+                ->where('deferred.error', 'Unable to fetch usage data.')
+            )
         );
 });
 
+// test('displays connection error message when ConnectionException is thrown on deferred request', function () {
+//     config(['ai-image.driver' => 'pixelforge']);
+
+//     $message = 'cURL error 28: Resolving timed out after 10000 milliseconds (see https://curl.se/libcurl/c/libcurl-errors.html) for https://pixelforge.promptedit.dev/v1/usage';
+
+//     Http::fake([
+//         '*/usage*' => Http::response([
+//             'error' => ['message' => $message],
+//         ], 500),
+//     ]);
+
+//     test()->get(route('usage.index'))
+//         ->assertOk()
+//         ->assertInertia(fn (Assert $page) => $page
+//             ->component('usage/Index')
+//             ->loadDeferredProps(fn (Assert $reload) => $reload                
+//                 ->missing('deferred.usage')
+//                 ->where('deferred.error', 'Unable to fetch usage data.')
+//             )
+//         );
+// });
+
 describe('validation', function () {
     test('rejects invalid date formats', function () {
-        $this->get(route('usage.index', [
+        test()->get(route('usage.index', [
             'start_date' => '01-01-2026',
             'end_date' => 'not-a-date',
         ]))->assertSessionHasErrors(['start_date', 'end_date']);
     });
 
     test('rejects an end date before the start date', function () {
-        $this->get(route('usage.index', [
+        test()->get(route('usage.index', [
             'start_date' => '2026-02-10',
             'end_date' => '2026-02-05',
         ]))->assertSessionHasErrors(['end_date']);
     });
 
     test('rejects date ranges exceeding 92 days', function () {
-        $this->get(route('usage.index', [
+        test()->get(route('usage.index', [
             'start_date' => '2026-01-01',
             'end_date' => '2026-04-03',
         ]))->assertSessionHasErrors([
@@ -131,7 +161,7 @@ describe('validation', function () {
     });
 
     test('allows date ranges of exactly 92 days', function () {
-        $this->get(route('usage.index', [
+        test()->get(route('usage.index', [
             'start_date' => '2026-01-01',
             'end_date' => '2026-04-02',
         ]))
@@ -139,7 +169,9 @@ describe('validation', function () {
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('usage/Index')
-                ->has('usage.data', 92)
+                ->loadDeferredProps(fn (Assert $reload) => $reload
+                    ->has('deferred.usage.data', 92)
+                )
             );
     });
 });

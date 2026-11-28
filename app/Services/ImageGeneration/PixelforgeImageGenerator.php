@@ -21,8 +21,8 @@ class PixelforgeImageGenerator implements ImageGenerator
     {
         $payload = array_filter([
             'prompt' => $generation->prompt,
-            'size' => $generation->size?->value,
-            'quality' => $generation->quality?->value,
+            'size' => $generation->size->value,
+            'quality' => $generation->quality->value,
             'reference_images' => ! empty($generation->reference_images) ? $generation->reference_images : null,
             'metadata' => [
                 'generation_id' => (string) $generation->id,

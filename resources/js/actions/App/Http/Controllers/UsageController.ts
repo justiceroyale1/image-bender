@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 const UsageController = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ UsageController.definition = {
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 UsageController.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ UsageController.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 UsageController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ UsageController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 UsageController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ UsageController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 const UsageControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const UsageControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 UsageControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ UsageControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'ge
 
 /**
 * @see \App\Http\Controllers\UsageController::__invoke
-* @see app/Http/Controllers/UsageController.php:13
+* @see app/Http/Controllers/UsageController.php:14
 * @route '/usage'
 */
 UsageControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

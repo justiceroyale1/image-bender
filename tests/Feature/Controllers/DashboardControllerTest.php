@@ -2,6 +2,7 @@
 
 use App\Contracts\ImageGenerator;
 use App\Models\User;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -10,7 +11,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 beforeEach(function () {
     Cache::flush();
     config(['ai-image.driver' => 'mock']);
-    $this->actingAs(User::factory()->create());
+    test()->actingAs(User::factory()->create());
 });
 
 afterEach(function () {
@@ -18,7 +19,7 @@ afterEach(function () {
 });
 
 test('defers usageSummary on initial dashboard load', function () {
-    $this->get(route('dashboard'))
+    test()->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
@@ -37,7 +38,7 @@ test('resolves deferred usageSummary with 30 days of marked-up mock data', funct
         + $expectedUsage->total->outputTokens
         + $expectedUsage->total->reasoningTokens;
 
-    $this->get(route('dashboard'))
+    test()->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
@@ -69,7 +70,7 @@ test('handles upstream api request exceptions inside deferred usageSummary', fun
         ], 502),
     ]);
 
-    $this->get(route('dashboard'))
+    test()->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
@@ -88,7 +89,7 @@ test('falls back to a generic error message when deferred request fails without 
         '*/usage*' => Http::response([], 500),
     ]);
 
-    $this->get(route('dashboard'))
+    test()->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard')
@@ -99,3 +100,27 @@ test('falls back to a generic error message when deferred request fails without 
             )
         );
 });
+
+
+// test('displays connection error message when ConnectionException is thrown on deferred request', function () {
+//     config(['ai-image.driver' => 'pixelforge']);
+
+//     $message = 'cURL error 28: Resolving timed out after 10000 milliseconds (see https://curl.se/libcurl/c/libcurl-errors.html) for https://pixelforge.promptedit.dev/v1/usage';
+
+//     Http::fake([
+//         '*/usage*' => Http::response([
+//             'error' => ['message' => $message],
+//         ], 500),
+//     ]);
+
+//     test()->get(route('dashboard'))
+//         ->assertOk()
+//         ->assertInertia(fn (Assert $page) => $page
+//             ->component('Dashboard')
+//             ->loadDeferredProps(fn (Assert $reload) => $reload
+//                 ->where('usageSummary', [
+//                     'error' => $message,
+//                 ])
+//             )
+//         );
+// });

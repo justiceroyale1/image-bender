@@ -49,15 +49,18 @@ class MockImageGenerator implements ImageGenerator
 
     public function find(string $generationId): GenerationData
     {
+        /**
+         * @var GenerationData|null $existing
+         */
         $existing = $this->store[$generationId] ?? null;
-        $prompt = $existing?->prompt ?? 'Mocked prompt';
-        $size = Size::tryFrom($existing?->size ?? '') ?? Size::Square;
-        $quality = Quality::tryFrom($existing?->quality ?? '') ?? Quality::Medium;
-        $referenceImages = $existing?->referenceImages ?? [];
-        $metadata = $existing?->metadata ?? [];
-        $rates = ! empty($existing?->rates) ? $existing->rates : self::DEFAULT_RATES;
-        $createdAt = $existing?->createdAt ?? CarbonImmutable::now()->subSeconds(10);
-        $startedAt = $existing?->startedAt ?? $createdAt->addSeconds(2);
+        $prompt = $existing->prompt ?? 'Mocked prompt';
+        $size = Size::tryFrom($existing->size ?? '') ?? Size::Square;
+        $quality = Quality::tryFrom($existing->quality ?? '') ?? Quality::Medium;
+        $referenceImages = $existing->referenceImages ?? [];
+        $metadata = $existing->metadata ?? [];
+        $rates = ! empty($existing->rates) ? $existing->rates : self::DEFAULT_RATES;
+        $createdAt = $existing->createdAt ?? CarbonImmutable::now()->subSeconds(10);
+        $startedAt = $existing->startedAt ?? $createdAt->addSeconds(2);
         $completedAt = CarbonImmutable::now();
 
         if (str_contains(strtolower($prompt), '[fail]')) {
@@ -137,10 +140,10 @@ class MockImageGenerator implements ImageGenerator
                 'cost_usd' => '0.000000000',
             ];
 
-            $inputText = (int) ($generation->usage['input_text_tokens'] ?? 0);
-            $inputImage = (int) ($generation->usage['input_image_tokens'] ?? 0);
-            $output = (int) ($generation->usage['output_tokens'] ?? 0);
-            $reasoning = (int) ($generation->usage['reasoning_tokens'] ?? 0);
+            $inputText = (int) $generation->usage['input_text_tokens'];
+            $inputImage = (int) $generation->usage['input_image_tokens'];
+            $output = (int) $generation->usage['output_tokens'];
+            $reasoning = (int) $generation->usage['reasoning_tokens'];
 
             $generationCost = $this->calculateCostUsd(
                 $inputText,
@@ -242,7 +245,7 @@ class MockImageGenerator implements ImageGenerator
     }
 
     /**
-     * @param  array<string, string>  $rates  USD per 1M tokens
+     * @param  array{input_text_tokens: string, input_image_tokens: string, output_tokens: string, reasoning_tokens: string}  $rates  USD per 1M tokens
      */
     protected function calculateCostUsd(
         int $inputTextTokens,
@@ -251,10 +254,10 @@ class MockImageGenerator implements ImageGenerator
         int $reasoningTokens,
         array $rates,
     ): string {
-        $textCost = bcmul((string) $inputTextTokens, $rates['input_text_tokens'] ?? '5.00', 9);
-        $imageCost = bcmul((string) $inputImageTokens, $rates['input_image_tokens'] ?? '10.00', 9);
-        $outputCost = bcmul((string) $outputTokens, $rates['output_tokens'] ?? '40.00', 9);
-        $reasoningCost = bcmul((string) $reasoningTokens, $rates['reasoning_tokens'] ?? '12.50', 9);
+        $textCost = bcmul((string) $inputTextTokens, $rates['input_text_tokens'], 9);
+        $imageCost = bcmul((string) $inputImageTokens, $rates['input_image_tokens'], 9);
+        $outputCost = bcmul((string) $outputTokens, $rates['output_tokens'], 9);
+        $reasoningCost = bcmul((string) $reasoningTokens, $rates['reasoning_tokens'], 9);
 
         $costPerMillion = bcadd(
             bcadd($textCost, $imageCost, 9),

@@ -102,7 +102,7 @@ const { currencyFormat, numberFormat } = useFormat();
             </Alert>
 
             <template v-else-if="usageSummary">
-                <!-- Top 3 Metric Cards (matching your 3-column grid) -->
+                <!-- Top 3 Metric Cards -->
                 <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                     <Card>
                         <CardHeader class="pb-2">
@@ -148,7 +148,7 @@ const { currencyFormat, numberFormat } = useFormat();
                             <CardTitle>Recent Daily Usage (Last 7 Days)</CardTitle>
                             <CardDescription v-if="usageSummary.period">
                                 30-day UTC window: {{ usageSummary.period.start_date }} to {{
-                                usageSummary.period.end_date }}
+                                    usageSummary.period.end_date }}
                             </CardDescription>
                         </div>
 

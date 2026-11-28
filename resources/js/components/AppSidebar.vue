@@ -32,7 +32,7 @@ const mainNavItems: NavItem[] = [
         icon: SquarePen,
     },
     {
-        title: 'Usage & Billing',
+        title: 'Usage',
         href: index(),
         icon: MonitorActivity,
     },

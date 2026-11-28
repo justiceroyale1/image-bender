@@ -11,7 +11,7 @@ readonly class GenerationData
     /**
      * @param  array<int, string>  $referenceImages
      * @param  array<string, string>  $metadata
-     * @param  array{input_text_tokens: string, input_image_tokens: string, output_tokens: string, reasoning_tokens: string}  $rates
+     * @param  array{input_text_tokens: string, input_image_tokens: string, output_tokens: string, reasoning_tokens: string}|null  $rates
      * @param  array{input_text_tokens: int, input_image_tokens: int, output_tokens: int, reasoning_tokens: int, total_tokens: int}|null  $usage
      * @param  array{code: string, message: string}|null  $error
      */
@@ -26,7 +26,7 @@ readonly class GenerationData
         public ?string $imageUrl = null,
         public ?CarbonImmutable $imageUrlExpiresAt = null,
         public ?array $usage = null,
-        public array $rates = [],
+        public ?array $rates = null,
         public ?array $error = null,
         public ?CarbonImmutable $createdAt = null,
         public ?CarbonImmutable $startedAt = null,
