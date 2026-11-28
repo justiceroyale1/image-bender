@@ -81,6 +81,7 @@ interface GenerationForm {
     prompt: string;
     size: Size;
     quality: Quality;
+    idempotency_key: string;
     referenceImages: { id: string, value: string }[];
 }
 
@@ -124,6 +125,7 @@ const form = useForm<GenerationForm>({
     prompt: '', //max 4000 chars
     size: '1024x1024',
     quality: 'medium',
+    idempotency_key: crypto.randomUUID(),
     referenceImages: []
 })
 
@@ -203,7 +205,6 @@ const submit = () => {
         reference_images: data.referenceImages
             .map((item) => item.value.trim())
             .filter((url) => url !== ''),
-        idempotency_key: crypto.randomUUID(),
         estimated_cost: estimatedCost.value,
         referenceImages: undefined,
     })).post('/generations');

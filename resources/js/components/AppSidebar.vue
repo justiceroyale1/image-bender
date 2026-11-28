@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, SquarePen, MonitorActivity } from '@lucide/vue';
+import { LayoutGrid, SquarePen, MonitorActivity, CreditCard } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -19,6 +19,7 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import { create } from '@/routes/generations';
 import { index } from '@/routes/usage';
+import { index as creditIndex } from '@/routes/credits';
 
 const mainNavItems: NavItem[] = [
     {
@@ -36,6 +37,11 @@ const mainNavItems: NavItem[] = [
         href: index(),
         icon: MonitorActivity,
     },
+    {
+        title: 'Credits',
+        href: creditIndex(),
+        icon: CreditCard
+    }
 ];
 
 const footerNavItems: NavItem[] = [

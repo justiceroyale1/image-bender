@@ -30,6 +30,4 @@ class UsageController extends Controller
             ]);
         }
     }
-
-
 }

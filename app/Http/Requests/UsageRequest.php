@@ -10,11 +10,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UsageRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -39,7 +34,7 @@ class UsageRequest extends FormRequest
                         return;
                     }
 
-                    if ($start && $end && ($start->diffInDays($end) + 1) > 92) {
+                    if ($start instanceof CarbonImmutable && $end instanceof CarbonImmutable && ($start->diffInDays($end) + 1) > 92) {
                         $fail('The date range cannot exceed 92 days.');
                     }
                 },

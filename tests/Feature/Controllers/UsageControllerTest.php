@@ -2,34 +2,35 @@
 
 use App\Contracts\ImageGenerator;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
+use Inertia\Testing\AssertableInertia;
 use Inertia\Testing\AssertableInertia as Assert;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Cache::flush();
     config(['ai-image.driver' => 'mock']);
     $this->actingAs(User::factory()->create());
 });
 
-afterEach(function () {
-    Carbon::setTestNow();
+afterEach(function (): void {
+    Date::setTestNow();
 });
 
-test('renders the usage page with 30 days of data by default', function () {
-    Carbon::setTestNow('2026-01-30 12:00:00');
+test('renders the usage page with 30 days of data by default', function (): void {
+    Date::setTestNow('2026-01-30 12:00:00');
 
     $this->get(route('usage.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('error', null)
             ->where('filters', [])
             ->where('usage.start_date', '2026-01-01')
             ->where('usage.end_date', '2026-01-30')
             ->has('usage.data', 30)
-            ->has('usage.total', fn (Assert $total) => $total
+            ->has('usage.total', fn (Assert $total): AssertableInertia => $total
                 ->hasAll([
                     'generations',
                     'input_text_tokens',
@@ -43,8 +44,8 @@ test('renders the usage page with 30 days of data by default', function () {
         );
 });
 
-test('renders the usage page with date filters and applies 1.25x markup', function () {
-    $expectedMarkedUpTotal = app(ImageGenerator::class)
+test('renders the usage page with date filters and applies 1.25x markup', function (): void {
+    $expectedMarkedUpTotal = resolve(ImageGenerator::class)
         ->usage('2026-01-01', '2026-01-31')
         ->withMarkup()
         ->total
@@ -55,7 +56,7 @@ test('renders the usage page with date filters and applies 1.25x markup', functi
         'end_date' => '2026-01-31',
     ]))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('error', null)
             ->where('filters', [
@@ -71,7 +72,7 @@ test('renders the usage page with date filters and applies 1.25x markup', functi
         );
 });
 
-test('handles upstream api request exceptions gracefully', function () {
+test('handles upstream api request exceptions gracefully', function (): void {
     // Switch to the real HTTP-backed driver and fake the HTTP layer
     config(['ai-image.driver' => 'pixelforge']);
 
@@ -83,14 +84,14 @@ test('handles upstream api request exceptions gracefully', function () {
 
     $this->get(route('usage.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('usage', null)
             ->where('error', 'Upstream quota exceeded.')
         );
 });
 
-test('falls back to a generic error message when request exception lacks an error message', function () {
+test('falls back to a generic error message when request exception lacks an error message', function (): void {
     config(['ai-image.driver' => 'pixelforge']);
 
     Http::fake([
@@ -99,29 +100,29 @@ test('falls back to a generic error message when request exception lacks an erro
 
     $this->get(route('usage.index'))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
+        ->assertInertia(fn (Assert $page): AssertableInertia => $page
             ->component('usage/Index')
             ->where('usage', null)
             ->where('error', 'Unable to fetch usage data.')
         );
 });
 
-describe('validation', function () {
-    test('rejects invalid date formats', function () {
+describe('validation', function (): void {
+    test('rejects invalid date formats', function (): void {
         $this->get(route('usage.index', [
             'start_date' => '01-01-2026',
             'end_date' => 'not-a-date',
         ]))->assertSessionHasErrors(['start_date', 'end_date']);
     });
 
-    test('rejects an end date before the start date', function () {
+    test('rejects an end date before the start date', function (): void {
         $this->get(route('usage.index', [
             'start_date' => '2026-02-10',
             'end_date' => '2026-02-05',
         ]))->assertSessionHasErrors(['end_date']);
     });
 
-    test('rejects date ranges exceeding 92 days', function () {
+    test('rejects date ranges exceeding 92 days', function (): void {
         $this->get(route('usage.index', [
             'start_date' => '2026-01-01',
             'end_date' => '2026-04-03',
@@ -130,14 +131,14 @@ describe('validation', function () {
         ]);
     });
 
-    test('allows date ranges of exactly 92 days', function () {
+    test('allows date ranges of exactly 92 days', function (): void {
         $this->get(route('usage.index', [
             'start_date' => '2026-01-01',
             'end_date' => '2026-04-02',
         ]))
             ->assertSessionHasNoErrors()
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
+            ->assertInertia(fn (Assert $page): AssertableInertia => $page
                 ->component('usage/Index')
                 ->has('usage.data', 92)
             );

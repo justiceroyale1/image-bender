@@ -147,7 +147,7 @@ class MockImageGenerator implements ImageGenerator
                 $inputImage,
                 $output,
                 $reasoning,
-                ! empty($generation->rates) ? $generation->rates : self::DEFAULT_RATES,
+                $generation->rates !== [] ? $generation->rates : self::DEFAULT_RATES,
             );
 
             $storedByDate[$utcDate]['generations']++;
@@ -264,5 +264,4 @@ class MockImageGenerator implements ImageGenerator
 
         return bcdiv($costPerMillion, '1000000', 9);
     }
-
 }

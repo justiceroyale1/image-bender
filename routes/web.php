@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CreditController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageGenerationController;
 use App\Http\Controllers\NewImageGenerationPageController;
@@ -15,7 +16,7 @@ Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
-    
+
     Route::get('generations/new', NewImageGenerationPageController::class)
         ->name('generations.create');
     Route::redirect('/generations', '/generations/new');
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->only(['store', 'show']);
 
     Route::get('/usage', UsageController::class)->name('usage.index');
+
+    Route::resource('credits', CreditController::class)
+        ->only(['index', 'store']);
 });
 
 Route::post('/webhooks/pixelforge', PixelforgeWebhookController::class);
